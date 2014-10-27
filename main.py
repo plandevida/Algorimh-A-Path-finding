@@ -190,11 +190,11 @@ class A_estrella():
 		ruta.reverse()
 
 		for i in range(0, len(ruta)):
-			print ruta[i].to_srt() + " "
+			print(ruta[i].to_srt() + " ")
 
 
 array = [[("inicio",0),("obstaculo",0),("meta",0)],[("vacio",0),("obstaculo",0),("vacio",0)],[("vacio",0),("vacio",0),("vacio",0)]]
 mapa = Mapa(array)
 a = A_estrella(mapa)
 
-print "\n Finish"
+print("\n Finish")
