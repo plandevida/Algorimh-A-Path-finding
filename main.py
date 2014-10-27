@@ -147,7 +147,7 @@ class A_estrella():
 			self.calcula_ruta()
 			self.ordenar_ruta()
 		else:
-			print "\n no tiene los metodos"
+			print("\n no tiene los metodos")
 
 	def calcula_ruta(self):
 		nodo = self.objeto.get_inicio()
