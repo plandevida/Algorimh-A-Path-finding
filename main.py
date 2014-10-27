@@ -1,33 +1,50 @@
 import math
+from array import array
 
 class Mapa():
 	def __init__(self, array):
-		#array[i][j] =[{"",1}
-		self.mapa = None
+		'''
+			Formato del array para el mapa
+			array[i][j] =("",1)
+		'''
+		self.mapa = []
 
-		for i in len(array):
-			for j in len(array[i]):
+		for i in range(0, len(array)):
+
+			fila = []
+			for j in range(0, len(array[i])):
 				tipo = array[i][j][0]
 
 				if ( tipo == "inicio" ):
 					nodo = Nodo(i, j, False, None, 0)
-					mapa[i][j] = nodo
+					fila.append(nodo)
 					self.inicio = nodo
 				elif ( tipo == "meta" ):
 					nodo = Nodo(i, j, False, None, 0)
-					mapa[i][j] = nodo
+					fila.append(nodo)
 					self.meta = nodo
 				elif ( tipo == "obstaculo" ):
-					mapa[i][j] = Nodo(i, j, True, None, 0)
+					fila.append( Nodo(i, j, True, None, 0) )
 				elif ( tipo == "penalizacion" ):
-					mapa[i][j] = Nodo(i, j, True, None, array[i][j][1])
+					fila.append( Nodo(i, j, True, None, array[i][j][1]) )
 				elif ( tipo == "vacio" ):
-					nodo = Nodo(i, j, False, None, 0)
+					fila.append( Nodo(i, j, False, None, 0) )
 
-	def en_rango(x,y):
+			self.mapa.append(fila)
+
+	def get_inicio(self):
+		return self.inicio
+
+	def meta(self):
+		return self.meta
+
+	def coste(self):
+		return 0
+
+	def en_rango(self, x, y):
 		return (x < 0 and x >= len(mapa))
 
-	def adyacentes(nodo):
+	def adyacentes(self, nodo):
 		lista = {}
 
 		if (not nodo.es_obstaculo()):
@@ -67,11 +84,20 @@ class Nodo():
 	def get_padre():
 		return padre
 
-	def coste (nodo):
+	'''
+		coste desde el nodo dado hasta este
+	'''
+	def coste(nodo):
 		return math.sqrt(math.pow(self.x-nodo.x,2)+math.pow(self.y-nodo.y,2))
 
 	def es_obstaculo():
 		return obstaculo
+
+	'''
+		imprime la posicion del nodo
+	'''
+	def to_srt():
+		print "[{x}, {y}]".format(x=self.x, y=self.y)
 
 
 class A_estrella():
@@ -79,18 +105,17 @@ class A_estrella():
 
 	def __init__(self,objeto):
 		self.objeto = objeto
-		if(not(hasattr(objeto,"get_inicio")and hasattr(objeto,"meta")and hasattr(objeto,"coste")and hasattr(objeto,"adyacentes"))):
-			pass
+		if( hasattr(objeto,"get_inicio") and hasattr(objeto,"meta") and hasattr(objeto,"coste") and hasattr(objeto,"adyacentes") ):
+			self.calcula_ruta()
+			self.ordenar_ruta()
 		else:
-			calcula_ruta()
-			ordenar_ruta()
-			
+			print "\n no tiene los metodos"			
 
-	def calcula_ruta():
-		nodo = objeto.get_inicio()
-		while nodo is not objeto.meta():
+	def calcula_ruta(self):
+		nodo = self.objeto.get_inicio()
+		while nodo is not self.objeto.meta():
 
-			lista_nodos = objeto.adyacentes(nodo)
+			lista_nodos = self.objeto.adyacentes(nodo)
 
 			for i in lista_nodos:
 
@@ -104,17 +129,18 @@ class A_estrella():
 			nodo_menor.padre=nodo
 			nodo = menor
 
-	def ordenar_ruta():
+	def ordenar_ruta(self):
 		ruta = ""
-		nodo = objeto.meta().get_padre()
-		while nodo is not objeto.get_inicio():
+		nodo = self.objeto.meta().get_padre()
+		while nodo is not self.objeto.get_inicio():
 			ruta.append(nodo)
 			nodo = nodo.get_padre()
 		ruta = ruta.reverse()
 
+		for i in ruta:
+			print i.to_srt() + " "
+
 
 array = [[("inicio",0),("obstaculo",0),("meta",0)],[("vacio",0),("obstaculo",0),("vacio",0)],[("vacio",0),("vacio",0),("vacio",0)]]
-a = A_estrella("")
-
-
-print("db es un nazi5")
+mapa = Mapa(array)
+a = A_estrella(mapa)
