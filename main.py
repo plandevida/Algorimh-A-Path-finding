@@ -1,5 +1,4 @@
 import math
-from array import array
 
 class Mapa():
 	def __init__(self, array):
@@ -49,7 +48,7 @@ class Mapa():
 		return 0
 
 	def en_rango(self, x, y):
-		return (x >= 0 and x <= len(self.mapa))
+		return (x >= 0 and x < len(self.mapa)) and (y >= 0 and y < len(self.mapa[0]))
 
 	def adyacentes(self, nodo):
 		lista = []
@@ -60,21 +59,21 @@ class Mapa():
 				x = nodo.x
 				y = nodo.y
 
-				if ( self.en_rango(x, y) ):
+				if ( self.en_rango(x-1, y-1) ):
 					lista.append(self.mapa[x-1][y-1])
-				if ( self.en_rango(x, y) ):
+				if ( self.en_rango(x, y-1) ):
 					lista.append(self.mapa[x][y-1])
-				if ( self.en_rango(x, y) ):
+				if ( self.en_rango(x+1, y-1) ):
 					lista.append(self.mapa[x+1][y-1])
-				if ( self.en_rango(x, y) ):
+				if ( self.en_rango(x-1, y) ):
 					lista.append(self.mapa[x-1][y])
-				if ( self.en_rango(x, y) ):
+				if ( self.en_rango(x+1, y) ):
 					lista.append(self.mapa[x+1][y])
-				if ( self.en_rango(x, y) ):
+				if ( self.en_rango(x-1, y+1) ):
 					lista.append(self.mapa[x-1][y+1])
-				if ( self.en_rango(x, y) ):
+				if ( self.en_rango(x, y+1) ):
 					lista.append(self.mapa[x][y+1])
-				if ( self.en_rango(x, y) ):
+				if ( self.en_rango(x+1, y+1) ):
 					lista.append(self.mapa[x+1][y+1])
 
 		return lista
@@ -90,9 +89,16 @@ class Nodo():
 		self.obstaculo = obstaculo
 		self.f_prima = penalizacion
 		self.g = 0
+		self.visitado = False
+
+	def __ne__(self, other):
+		return not self.__eq__(other)
+
+	def __eq__(self, nodo):
+		return (isinstance(nodo, self.__class__) and self.__dict__ == nodo.__dict__)
 
 	def get_padre(self):
-		return padre
+		return self.padre
 
 	'''
 		coste desde el nodo dado hasta este
@@ -107,20 +113,23 @@ class Nodo():
 		imprime la posicion del nodo
 	'''
 	def to_srt(self):
-		print "[{x}, {y}]".format(x=self.x, y=self.y)
+		return "[{x}, {y}]".format(x=self.x, y=self.y)
 
-	def __eq__(self, nodo):
-		if (isinstance(nodo, Nodo)):
-			iguales = (self.x == nodo.x and slef.y == nodo.y)
+	def get_penalizacion(self):
+		return self.f_prima
 
-			if (iguales):
-				iguales = 0
-			else:
-				iguales = 1
+	def get_x(self):
+		return self.x
 
-			return iguales
-		else:
-			return 0
+	def get_y(self):
+		return self.y
+
+	def marcado_visitado(self):
+		self.visitado = True
+		pass
+
+	def esta_visitado(self):
+		return self.visitado
 
 class A_estrella():
 	#La clase A estrella realiza el calculo de la ruta y almacena el mapa
@@ -131,18 +140,25 @@ class A_estrella():
 			self.calcula_ruta()
 			self.ordenar_ruta()
 		else:
-			print "\n no tiene los metodos"			
+			print "\n no tiene los metodos"
 
 	def calcula_ruta(self):
 		nodo = self.objeto.get_inicio()
 		meta = self.objeto.get_meta()
+
+		print "\n el nodo inicio {n}".format(n=nodo.to_srt())
+		print "\n el nodo meta {n}".format(n=meta.to_srt())
+
 		nodo_menor = None
-		while nodo is not meta:
+		while nodo != meta:
 
 			lista_nodos = self.objeto.adyacentes(nodo)
-			nodo_menor = Nodo(0,0,False, None, 10000000)
+			''' Nodo con valor infinito para empezar con los adyacentes'''
+			nodo_menor = Nodo(0,0,False, None, 10000000000)
 
 			for i in lista_nodos:
+				if (i.esta_visitado()):
+					continue
 
 				g = nodo.g + nodo.coste(i)
 				h = i.coste(self.objeto.meta)
@@ -152,18 +168,28 @@ class A_estrella():
 				if ( nodo_menor and nodo_menor.f > f ):
 					nodo_menor = i
 			nodo_menor.padre=nodo
+			nodo.marcado_visitado()
 			nodo = nodo_menor
 
+			print "\n nodo seleccionado {n}".format(n=nodo.to_srt())
+
 	def ordenar_ruta(self):
-		ruta = ""
-		nodo = self.objeto.meta().get_padre()
-		while nodo is not self.objeto.get_inicio():
+		ruta = []
+		ruta.append(self.objeto.get_meta())
+
+		nodo = self.objeto.get_meta().get_padre()
+
+		while nodo != self.objeto.get_inicio():
 			ruta.append(nodo)
 			nodo = nodo.get_padre()
+
+			print ruta
+
+		ruta.append(self.objeto.get_inicio())
 		ruta = ruta.reverse()
 
-		for i in ruta:
-			print i.to_srt() + " "
+		for i in range(ruta):
+			print ruta[i].to_srt() + " "
 
 
 array = [[("inicio",0),("obstaculo",0),("meta",0)],[("vacio",0),("obstaculo",0),("vacio",0)],[("vacio",0),("vacio",0),("vacio",0)]]
