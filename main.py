@@ -144,10 +144,11 @@ class A_estrella():
 
 	def calcula_ruta(self):
 		nodo = self.objeto.get_inicio()
+		nodo.marcado_visitado()
 		meta = self.objeto.get_meta()
 
-		print "\n el nodo inicio {n}".format(n=nodo.to_srt())
-		print "\n el nodo meta {n}".format(n=meta.to_srt())
+		#print "\n el nodo inicio {n}".format(n=nodo.to_srt())
+		#print "\n el nodo meta {n}".format(n=meta.to_srt())
 
 		nodo_menor = None
 		while nodo != meta:
@@ -158,6 +159,7 @@ class A_estrella():
 
 			for i in lista_nodos:
 				if (i.esta_visitado()):
+					#print "\n omitiendo el nodo {n}".format(n=i.to_srt())
 					continue
 
 				g = nodo.g + nodo.coste(i)
@@ -171,7 +173,7 @@ class A_estrella():
 			nodo.marcado_visitado()
 			nodo = nodo_menor
 
-			print "\n nodo seleccionado {n}".format(n=nodo.to_srt())
+			#print "\n nodo seleccionado {n}".format(n=nodo.to_srt())
 
 	def ordenar_ruta(self):
 		ruta = []
@@ -183,20 +185,18 @@ class A_estrella():
 			ruta.append(nodo)
 			nodo = nodo.get_padre()
 
-			print ruta
-
 		ruta.append(self.objeto.get_inicio())
-		ruta = ruta.reverse()
+		ruta.reverse()
 
-		for i in range(ruta):
+		for i in range(0, len(ruta)):
 			print ruta[i].to_srt() + " "
 
 
 array = [[("inicio",0),("obstaculo",0),("meta",0)],[("vacio",0),("obstaculo",0),("vacio",0)],[("vacio",0),("vacio",0),("vacio",0)]]
 mapa = Mapa(array)
 nodo = mapa.get_nodo(1,1)
-print nodo
-print (mapa.adyacentes( nodo ))
+#print nodo
+#print (mapa.adyacentes( nodo ))
 a = A_estrella(mapa)
 
 print "\n Finish"
