@@ -60,21 +60,37 @@ class Mapa():
 				y = nodo.y
 
 				if ( self.en_rango(x-1, y-1) ):
-					lista.append(self.mapa[x-1][y-1])
+					nodo_adyacente = self.mapa[x-1][y-1]
+					if ( not nodo_adyacente.es_obstaculo()):
+						lista.append(nodo_adyacente)
 				if ( self.en_rango(x, y-1) ):
-					lista.append(self.mapa[x][y-1])
+					nodo_adyacente = self.mapa[x][y-1]
+					if ( not nodo_adyacente.es_obstaculo()):
+						lista.append(nodo_adyacente)
 				if ( self.en_rango(x+1, y-1) ):
-					lista.append(self.mapa[x+1][y-1])
+					nodo_adyacente = self.mapa[x+1][y-1]
+					if ( not nodo_adyacente.es_obstaculo()):
+						lista.append(nodo_adyacente)
 				if ( self.en_rango(x-1, y) ):
-					lista.append(self.mapa[x-1][y])
+					nodo_adyacente = self.mapa[x-1][y]
+					if ( not nodo_adyacente.es_obstaculo()):
+						lista.append(nodo_adyacente)
 				if ( self.en_rango(x+1, y) ):
-					lista.append(self.mapa[x+1][y])
+					nodo_adyacente = self.mapa[x+1][y]
+					if ( not nodo_adyacente.es_obstaculo()):
+						lista.append(nodo_adyacente)
 				if ( self.en_rango(x-1, y+1) ):
-					lista.append(self.mapa[x-1][y+1])
+					nodo_adyacente = self.mapa[x-1][y+1]
+					if ( not nodo_adyacente.es_obstaculo()):
+						lista.append(nodo_adyacente)
 				if ( self.en_rango(x, y+1) ):
-					lista.append(self.mapa[x][y+1])
+					nodo_adyacente = self.mapa[x][y+1]
+					if ( not nodo_adyacente.es_obstaculo()):
+						lista.append(nodo_adyacente)
 				if ( self.en_rango(x+1, y+1) ):
-					lista.append(self.mapa[x+1][y+1])
+					nodo_adyacente = self.mapa[x+1][y+1]
+					if ( not nodo_adyacente.es_obstaculo()):
+						lista.append(nodo_adyacente)
 
 		return lista
 
@@ -115,15 +131,6 @@ class Nodo():
 	def to_srt(self):
 		return "[{x}, {y}]".format(x=self.x, y=self.y)
 
-	def get_penalizacion(self):
-		return self.f_prima
-
-	def get_x(self):
-		return self.x
-
-	def get_y(self):
-		return self.y
-
 	def marcado_visitado(self):
 		self.visitado = True
 		pass
@@ -147,9 +154,6 @@ class A_estrella():
 		nodo.marcado_visitado()
 		meta = self.objeto.get_meta()
 
-		#print "\n el nodo inicio {n}".format(n=nodo.to_srt())
-		#print "\n el nodo meta {n}".format(n=meta.to_srt())
-
 		nodo_menor = None
 		while nodo != meta:
 
@@ -159,7 +163,6 @@ class A_estrella():
 
 			for i in lista_nodos:
 				if (i.esta_visitado()):
-					#print "\n omitiendo el nodo {n}".format(n=i.to_srt())
 					continue
 
 				g = nodo.g + nodo.coste(i)
@@ -172,8 +175,6 @@ class A_estrella():
 			nodo_menor.padre=nodo
 			nodo.marcado_visitado()
 			nodo = nodo_menor
-
-			#print "\n nodo seleccionado {n}".format(n=nodo.to_srt())
 
 	def ordenar_ruta(self):
 		ruta = []
@@ -194,9 +195,6 @@ class A_estrella():
 
 array = [[("inicio",0),("obstaculo",0),("meta",0)],[("vacio",0),("obstaculo",0),("vacio",0)],[("vacio",0),("vacio",0),("vacio",0)]]
 mapa = Mapa(array)
-nodo = mapa.get_nodo(1,1)
-#print nodo
-#print (mapa.adyacentes( nodo ))
 a = A_estrella(mapa)
 
 print "\n Finish"
