@@ -35,38 +35,47 @@ class Mapa():
 	def get_inicio(self):
 		return self.inicio
 
-	def meta(self):
+	def get_meta(self):
 		return self.meta
+
+	def get_nodo(self, x, y):
+
+		if ( self.en_rango(x, y) ):
+			return self.mapa[x][y]
+		else:
+			return None
 
 	def coste(self):
 		return 0
 
 	def en_rango(self, x, y):
-		return (x < 0 and x >= len(mapa))
+		return (x >= 0 and x <= len(self.mapa))
 
 	def adyacentes(self, nodo):
-		lista = {}
+		lista = []
 
-		if (not nodo.es_obstaculo()):
-			x = nodo.x
-			y = nodo.y
+		if ( nodo ):
 
-			if ( self.en_rango(x, y) ):
-				lista.append(mapa[x-1][y-1])
-			if ( self.en_rango(x, y) ):
-				lista.append(mapa[x][y-1])
-			if ( self.en_rango(x, y) ):
-				lista.append(mapa[x+1][y-1])
-			if ( self.en_rango(x, y) ):
-				lista.append(mapa[x-1][y])
-			if ( self.en_rango(x, y) ):
-				lista.append(mapa[x+1][y])
-			if ( self.en_rango(x, y) ):
-				lista.append(mapa[x-1][y+1])
-			if ( self.en_rango(x, y) ):
-				lista.append(mapa[x][y+1])
-			if ( self.en_rango(x, y) ):
-				lista.append(mapa[x+1][y+1])
+			if (not nodo.es_obstaculo()):
+				x = nodo.x
+				y = nodo.y
+
+				if ( self.en_rango(x, y) ):
+					lista.append(self.mapa[x-1][y-1])
+				if ( self.en_rango(x, y) ):
+					lista.append(self.mapa[x][y-1])
+				if ( self.en_rango(x, y) ):
+					lista.append(self.mapa[x+1][y-1])
+				if ( self.en_rango(x, y) ):
+					lista.append(self.mapa[x-1][y])
+				if ( self.en_rango(x, y) ):
+					lista.append(self.mapa[x+1][y])
+				if ( self.en_rango(x, y) ):
+					lista.append(self.mapa[x-1][y+1])
+				if ( self.en_rango(x, y) ):
+					lista.append(self.mapa[x][y+1])
+				if ( self.en_rango(x, y) ):
+					lista.append(self.mapa[x+1][y+1])
 
 		return lista
 
@@ -80,6 +89,7 @@ class Nodo():
 		self.f = float("inf")
 		self.obstaculo = obstaculo
 		self.f_prima = penalizacion
+		self.g = 0
 
 	def get_padre(self):
 		return padre
@@ -117,7 +127,7 @@ class A_estrella():
 
 	def __init__(self,objeto):
 		self.objeto = objeto
-		if( hasattr(objeto,"get_inicio") and hasattr(objeto,"meta") and hasattr(objeto,"coste") and hasattr(objeto,"adyacentes") ):
+		if( hasattr(objeto,"get_inicio") and hasattr(objeto,"get_meta") and hasattr(objeto,"coste") and hasattr(objeto,"adyacentes") ):
 			self.calcula_ruta()
 			self.ordenar_ruta()
 		else:
@@ -125,22 +135,24 @@ class A_estrella():
 
 	def calcula_ruta(self):
 		nodo = self.objeto.get_inicio()
-		meta = self.objeto.meta()
+		meta = self.objeto.get_meta()
+		nodo_menor = None
 		while nodo is not meta:
 
 			lista_nodos = self.objeto.adyacentes(nodo)
+			nodo_menor = Nodo(0,0,False, None, 10000000)
 
 			for i in lista_nodos:
 
 				g = nodo.g + nodo.coste(i)
-				h = i.coste(objeto.meta)
+				h = i.coste(self.objeto.meta)
 
 				f = g + h
 
 				if ( nodo_menor and nodo_menor.f > f ):
 					nodo_menor = i
 			nodo_menor.padre=nodo
-			nodo = menor
+			nodo = nodo_menor
 
 	def ordenar_ruta(self):
 		ruta = ""
@@ -156,5 +168,9 @@ class A_estrella():
 
 array = [[("inicio",0),("obstaculo",0),("meta",0)],[("vacio",0),("obstaculo",0),("vacio",0)],[("vacio",0),("vacio",0),("vacio",0)]]
 mapa = Mapa(array)
-print (mapa.adyacentes( Nodo(1, 1, False, None, 0) ))
+nodo = mapa.get_nodo(1,1)
+print nodo
+print (mapa.adyacentes( nodo ))
 a = A_estrella(mapa)
+
+print "\n Finish"
