@@ -51,21 +51,21 @@ class Mapa():
 			x = nodo.x
 			y = nodo.y
 
-			if ( en_rango() ):
+			if ( self.en_rango(x, y) ):
 				lista.append(mapa[x-1][y-1])
-			if ( en_rango() ):
+			if ( self.en_rango(x, y) ):
 				lista.append(mapa[x][y-1])
-			if ( en_rango() ):
+			if ( self.en_rango(x, y) ):
 				lista.append(mapa[x+1][y-1])
-			if ( en_rango() ):
+			if ( self.en_rango(x, y) ):
 				lista.append(mapa[x-1][y])
-			if ( en_rango() ):
+			if ( self.en_rango(x, y) ):
 				lista.append(mapa[x+1][y])
-			if ( en_rango() ):
+			if ( self.en_rango(x, y) ):
 				lista.append(mapa[x-1][y+1])
-			if ( en_rango() ):
+			if ( self.en_rango(x, y) ):
 				lista.append(mapa[x][y+1])
-			if ( en_rango() ):
+			if ( self.en_rango(x, y) ):
 				lista.append(mapa[x+1][y+1])
 
 		return lista
@@ -81,24 +81,36 @@ class Nodo():
 		self.obstaculo = obstaculo
 		self.f_prima = penalizacion
 
-	def get_padre():
+	def get_padre(self):
 		return padre
 
 	'''
 		coste desde el nodo dado hasta este
 	'''
-	def coste(nodo):
+	def coste(self, nodo):
 		return math.sqrt(math.pow(self.x-nodo.x,2)+math.pow(self.y-nodo.y,2))
 
-	def es_obstaculo():
-		return obstaculo
+	def es_obstaculo(self):
+		return self.obstaculo
 
 	'''
 		imprime la posicion del nodo
 	'''
-	def to_srt():
+	def to_srt(self):
 		print "[{x}, {y}]".format(x=self.x, y=self.y)
 
+	def __eq__(self, nodo):
+		if (isinstance(nodo, Nodo)):
+			iguales = (self.x == nodo.x and slef.y == nodo.y)
+
+			if (iguales):
+				iguales = 0
+			else:
+				iguales = 1
+
+			return iguales
+		else:
+			return 0
 
 class A_estrella():
 	#La clase A estrella realiza el calculo de la ruta y almacena el mapa
@@ -113,7 +125,8 @@ class A_estrella():
 
 	def calcula_ruta(self):
 		nodo = self.objeto.get_inicio()
-		while nodo is not self.objeto.meta():
+		meta = self.objeto.meta()
+		while nodo is not meta:
 
 			lista_nodos = self.objeto.adyacentes(nodo)
 
@@ -143,4 +156,5 @@ class A_estrella():
 
 array = [[("inicio",0),("obstaculo",0),("meta",0)],[("vacio",0),("obstaculo",0),("vacio",0)],[("vacio",0),("vacio",0),("vacio",0)]]
 mapa = Mapa(array)
-a = A_estrella(mapa)
+print (mapa.adyacentes( Nodo(1, 1, False, None, 0) ))
+#a = A_estrella(mapa)
