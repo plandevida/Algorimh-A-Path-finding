@@ -1,4 +1,5 @@
 import math
+from Queue import PriorityQueue
 
 class Mapa():
 	def __init__(self, array):
@@ -44,8 +45,8 @@ class Mapa():
 		else:
 			return None
 
-	def coste(self):
-		return 0
+	def dim(self):
+		return (len(array), len(array[0]))
 
 	def en_rango(self, x, y):
 		return (x >= 0 and x < len(self.mapa)) and (y >= 0 and y < len(self.mapa[0]))
@@ -120,7 +121,7 @@ class Nodo():
 		coste desde el nodo dado hasta este
 	'''
 	def coste(self, nodo):
-		return math.sqrt(math.pow(self.x-nodo.x,2)+math.pow(self.y-nodo.y,2))
+		return math.sqrt(math.pow(self.x-nodo.x,2)+math.pow(self.y-nodo.y,2)) + self.f_prima
 
 	def es_obstaculo(self):
 		return self.obstaculo
@@ -138,49 +139,69 @@ class Nodo():
 	def esta_visitado(self):
 		return self.visitado
 
+	def set_g(self, gnuevo):
+		self.g = gnuevo
+		pass
+
 class A_estrella():
 	#La clase A estrella realiza el calculo de la ruta y almacena el mapa
 
 	def __init__(self,objeto):
 		self.objeto = objeto
-		if( hasattr(objeto,"get_inicio") and hasattr(objeto,"get_meta") and hasattr(objeto,"coste") and hasattr(objeto,"adyacentes") ):
+		if( hasattr(objeto,"get_inicio") and hasattr(objeto,"get_meta") and hasattr(objeto,"dim") and hasattr(objeto,"adyacentes") ):
 			self.calcula_ruta()
 			self.ordenar_ruta()
 		else:
 			print("\n no tiene los metodos")
 
 	def calcula_ruta(self):
+
+		''' tupla con la dimension del mapa'''
+		dimension = self.objeto.dim()
+
+		''' No es lo que piensas EB, cochino'''
+		abiertos = PriorityQueue(maxsize=(dimension[0] * dimension[1]))
+
 		nodo = self.objeto.get_inicio()
-		nodo.marcado_visitado()
+		abiertos.put( (0, nodo) )
 		meta = self.objeto.get_meta()
 
 		nodo_menor = None
-		while nodo != meta:
+		while nodo != meta and not abiertos.empty():
+
+			try:
+				if ( nodo != self.objeto.get_inicio()):
+					padre = nodo
+
+				nodo = abiertos.get()[1]
+				nodo.marcado_visitado()
+
+				if ( nodo != self.objeto.get_inicio()):
+					nodo.padre = padre
+
+				if ( padre ):
+					nodo.set_g(padre.g + nodo.coste(padre) )
+			except:
+				print("Hubo un error extrayendo de la cola")
 
 			lista_nodos = self.objeto.adyacentes(nodo)
-			''' Nodo con valor infinito para empezar con los adyacentes'''
-			nodo_menor = Nodo(0,0,False, None, 10000000000)
 
 			for i in lista_nodos:
-				if (i.esta_visitado()):
-					continue
+				try:
+					if ( not i.esta_visitado() ):
+						g = nodo.g + nodo.coste(i)
+						h = i.coste(self.objeto.meta)
 
-				g = nodo.g + nodo.coste(i)
-				h = i.coste(self.objeto.meta)
-
-				f = g + h
-
-				if ( nodo_menor and nodo_menor.f > f ):
-					nodo_menor = i
-			nodo_menor.padre=nodo
-			nodo.marcado_visitado()
-			nodo = nodo_menor
+						f = g + h
+						''' La cola de prioridad usa por debajo un monticulo (modulo heapq), si se le pasa una tupla usa el primer elemento para la prioridad'''
+						abiertos.put( (f, i) )
+				except:
+					print "Cola al maximo"
 
 	def ordenar_ruta(self):
 		ruta = []
-		ruta.append(self.objeto.get_meta())
 
-		nodo = self.objeto.get_meta().get_padre()
+		nodo = self.objeto.get_meta()
 
 		while nodo != self.objeto.get_inicio():
 			ruta.append(nodo)
