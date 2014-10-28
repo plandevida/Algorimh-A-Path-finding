@@ -166,21 +166,16 @@ class A_estrella():
 		abiertos.put( (0, nodo) )
 		meta = self.objeto.get_meta()
 
-		nodo_menor = None
 		while nodo != meta and not abiertos.empty():
 
 			try:
-				if ( nodo != self.objeto.get_inicio()):
-					padre = nodo
+				padre = nodo
 
 				nodo = abiertos.get()[1]
 				nodo.marcado_visitado()
 
-				if ( nodo != self.objeto.get_inicio()):
-					nodo.padre = padre
-
-				if ( padre ):
-					nodo.set_g(padre.g + nodo.coste(padre) )
+				nodo.padre = padre
+				nodo.set_g(padre.g + nodo.coste(padre) )
 			except:
 				print("Hubo un error extrayendo de la cola")
 
