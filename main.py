@@ -219,7 +219,7 @@ class A_estrella():
 			print("\n No se ha encontrado solucion")
 
 
-array = [[("inicio",0),("obstaculo",0),("meta",0)],[("vacio",0),("obstaculo",0),("vacio",0)],[("vacio",0),("vacio",0),("vacio",0)]]
+array = [[("inicio",0),("obstaculo",0),("meta",0)],[("obstaculo",0),("obstaculo",0),("vacio",0)],[("vacio",0),("vacio",0),("vacio",0)]]
 mapa = Mapa(array)
 a = A_estrella(mapa)
 
