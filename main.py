@@ -8,6 +8,8 @@ class Mapa():
 			array[i][j] =("",1)
 		'''
 		self.mapa = []
+		self.inicio = None
+		self.meta = None
 
 		for i in range(0, len(array)):
 
@@ -149,8 +151,13 @@ class A_estrella():
 	def __init__(self,objeto):
 		self.objeto = objeto
 		if( hasattr(objeto,"get_inicio") and hasattr(objeto,"get_meta") and hasattr(objeto,"dim") and hasattr(objeto,"adyacentes") ):
-			self.calcula_ruta()
-			self.ordenar_ruta()
+
+			if ( self.objeto.get_inicio() and self.objeto.get_meta() ):
+
+				self.calcula_ruta()
+				self.ordenar_ruta()
+			else:
+				print("\n no se ha definido el inicio y/o la meta")
 		else:
 			print("\n no tiene los metodos")
 
@@ -198,15 +205,18 @@ class A_estrella():
 
 		nodo = self.objeto.get_meta()
 
-		while nodo != self.objeto.get_inicio():
-			ruta.append(nodo)
-			nodo = nodo.get_padre()
+		if ( nodo.get_padre() ):
+			while nodo != self.objeto.get_inicio():
+				ruta.append(nodo)
+				nodo = nodo.get_padre()
 
-		ruta.append(self.objeto.get_inicio())
-		ruta.reverse()
+			ruta.append(self.objeto.get_inicio())
+			ruta.reverse()
 
-		for i in range(0, len(ruta)):
-			print(ruta[i].to_srt() + " ")
+			for i in range(0, len(ruta)):
+				print(ruta[i].to_srt() + " ")
+		else:
+			print("\n No se ha encontrado solucion")
 
 
 array = [[("inicio",0),("obstaculo",0),("meta",0)],[("vacio",0),("obstaculo",0),("vacio",0)],[("vacio",0),("vacio",0),("vacio",0)]]
