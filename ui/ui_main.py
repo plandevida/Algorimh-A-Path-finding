@@ -32,13 +32,6 @@ class Tablero(QMainWindow, Ui_MainWindow):
 
 		self.ui = Ui_MainWindow
 		self.setupUi(self)
-
-		for row in xrange(3):
-			for col in xrange(3):
-				boton = QtGui.QPushButton("boton %d-%d" % (row,col))
-				boton.setFlat(True)
-				boton.clicked.connect(self.boton_clicked)
-				self.gridLayout.addWidget(boton,row,col)
 				
 		print(self.gridLayout.maximumSize())
 
