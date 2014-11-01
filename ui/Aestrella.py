@@ -15,22 +15,26 @@ class Mapa():
 
 			fila = []
 			for j in range(0, len(array[i])):
-				tipo = array[i][j][0]
-
-				if ( tipo == "inicio" ):
-					nodo = Nodo(i, j, False, None, 0)
-					fila.append(nodo)
-					self.inicio = nodo
-				elif ( tipo == "meta" ):
-					nodo = Nodo(i, j, False, None, 0)
-					fila.append(nodo)
-					self.meta = nodo
-				elif ( tipo == "obstaculo" ):
-					fila.append( Nodo(i, j, True, None, 0) )
-				elif ( tipo == "penalizacion" ):
-					fila.append( Nodo(i, j, True, None, array[i][j][1]) )
-				elif ( tipo == "vacio" ):
+				
+				if array[i][j] == None:
 					fila.append( Nodo(i, j, False, None, 0) )
+				else:
+					tipo = array[i][j][0]
+
+					if ( tipo == "inicio" ):
+						nodo = Nodo(i, j, False, None, 0)
+						fila.append(nodo)
+						self.inicio = nodo
+					elif ( tipo == "meta" ):
+						nodo = Nodo(i, j, False, None, 0)
+						fila.append(nodo)
+						self.meta = nodo
+					elif ( tipo == "obstaculo" ):
+						fila.append( Nodo(i, j, True, None, 0) )
+					elif ( tipo == "penalizacion" ):
+						fila.append( Nodo(i, j, True, None, array[i][j][1]) )
+					elif ( tipo == "vacio" ):
+						fila.append( Nodo(i, j, False, None, 0) )
 
 			self.mapa.append(fila)
 
@@ -48,7 +52,7 @@ class Mapa():
 			return None
 
 	def dim(self):
-		return (len(array), len(array[0]))
+		return (len(self.mapa), len(self.mapa[0]))
 
 	def en_rango(self, x, y):
 		return (x >= 0 and x < len(self.mapa)) and (y >= 0 and y < len(self.mapa[0]))
@@ -109,12 +113,19 @@ class Nodo():
 		self.f_prima = penalizacion
 		self.g = 0
 		self.visitado = False
+		self.abierto = False
 
 	def __ne__(self, other):
 		return not self.__eq__(other)
 
+	'''
+	by Emilio:
+		cuidado con la recursion en bucle, me he pasado 3 horas buscando este error.
+		El dict comprueba los atributos que a su vez son nodos que a su vez se comprueban....
+	'''
 	def __eq__(self, nodo):
-		return (isinstance(nodo, self.__class__) and self.__dict__ == nodo.__dict__)
+		#return (isinstance(nodo, self.__class__) and self.__dict__ == nodo.__dict__)
+		return (isinstance(nodo, self.__class__) and nodo.x == self.x and nodo.y == self.y)
 
 	def get_padre(self):
 		return self.padre
@@ -140,6 +151,12 @@ class Nodo():
 
 	def esta_visitado(self):
 		return self.visitado
+
+	def esta_abierto(self):
+		return self.abierto
+	def marcado_abierto(self):
+		self.abierto = True
+		pass
 
 	def set_g(self, gnuevo):
 		self.g = gnuevo
@@ -190,11 +207,11 @@ class A_estrella():
 
 			for i in lista_nodos:
 				try:
-					if ( not i.esta_visitado() ):
+					if ( not i.esta_abierto() ):
 						g = nodo.g + nodo.coste(i)
 						h = i.coste(self.objeto.meta)
-
 						f = g + h
+						i.marcado_abierto()
 						''' La cola de prioridad usa por debajo un monticulo (modulo heapq), si se le pasa una tupla usa el primer elemento para la prioridad'''
 						abiertos.put( (f, i) )
 				except:
@@ -219,8 +236,9 @@ class A_estrella():
 			print("\n No se ha encontrado solucion")
 
 
-array = [[("inicio",0),("obstaculo",0),("meta",0)],[("obstaculo",0),("obstaculo",0),("vacio",0)],[("vacio",0),("vacio",0),("vacio",0)]]
-mapa = Mapa(array)
-a = A_estrella(mapa)
+# array = [[("inicio",0),("obstaculo",0),("meta",0)],[("obstaculo",0),("obstaculo",0),("vacio",0)],[("vacio",0),("vacio",0),("vacio",0)]]
+# mapa = Mapa(array)
+# a = A_estrella(mapa)
 
-print("\n Finish")
+# print("\n Finish")
+

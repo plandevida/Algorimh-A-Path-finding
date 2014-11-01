@@ -14,7 +14,7 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from Queue import PriorityQueue
 import constants
-import Aestrella
+from Aestrella import *
 
 
 try:
@@ -51,7 +51,8 @@ class Ui_MainWindow(object):
 
 	# Makes the call to A* algorithm and gets the answer	
 	def generate_solution(self):
-		self.done()
+		mp = Mapa(self.mapa)
+		a = A_estrella(mp)
 	# Prints the result of A* on the table 
 	def print_solution(self,queue):
 		self.done()
@@ -82,7 +83,7 @@ class Ui_MainWindow(object):
 				self.mapa[self.ending_cell[0]][self.ending_cell[1]] = constants.get_empty_cell_value()
 			self.ending_cell = (index.row(), index.column())
 			self.centralwidget.findChild(QTableWidget, "table").item(self.ending_cell[0],self.ending_cell[1]).setBackground(constants.get_ending_background())
-			self.mapa[self.ending_cell[0]][self.ending_cell[1]] = constants.get_start_cell_value()
+			self.mapa[self.ending_cell[0]][self.ending_cell[1]] = constants.get_ending_cell_value()
 
 		if self.centralwidget.findChild(QRadioButton,"setbackRadio") is self.radioB:
 			self.centralwidget.findChild(QTableWidget, "table").item(index.row(),index.column()).setBackground(constants.get_setback_background())
@@ -220,7 +221,7 @@ if __name__ == "__main__":
 	import sys
 	app = QtGui.QApplication(sys.argv)
 	MainWindow = QtGui.QMainWindow()
-	ui = Ui_MainWindow(30,40)
+	ui = Ui_MainWindow(30,30)
 	ui.setupUi(MainWindow)
 	MainWindow.show()
 	sys.exit(app.exec_())
