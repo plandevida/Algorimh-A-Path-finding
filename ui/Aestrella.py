@@ -143,7 +143,7 @@ class Nodo():
 		imprime la posicion del nodo
 	'''
 	def to_srt(self):
-		return "[{x}, {y}]".format(x=self.x, y=self.y)
+		return "({x}, {y})".format(x=self.x, y=self.y)
 
 	def marcado_visitado(self):
 		self.visitado = True
@@ -167,16 +167,16 @@ class A_estrella():
 
 	def __init__(self,objeto):
 		self.objeto = objeto
+		self.set_solucionable(False)
 		if( hasattr(objeto,"get_inicio") and hasattr(objeto,"get_meta") and hasattr(objeto,"dim") and hasattr(objeto,"adyacentes") ):
 
 			if ( self.objeto.get_inicio() and self.objeto.get_meta() ):
-
 				self.calcula_ruta()
 				self.ordenar_ruta()
 			else:
-				print("\n no se ha definido el inicio y/o la meta")
+				self.error="No se ha definido el inicio y/o la meta"
 		else:
-			print("\n no tiene los metodos")
+			self.error="No tiene los metodos genericos"
 
 	def calcula_ruta(self):
 
@@ -187,6 +187,7 @@ class A_estrella():
 		abiertos = PriorityQueue(maxsize=(dimension[0] * dimension[1]))
 
 		nodo = self.objeto.get_inicio()
+		nodo.marcado_abierto()
 		abiertos.put( (0, nodo) )
 		meta = self.objeto.get_meta()
 
@@ -194,17 +195,15 @@ class A_estrella():
 
 			try:
 				padre = nodo
-
 				nodo = abiertos.get()[1]
 				nodo.marcado_visitado()
-
-				nodo.padre = padre
-				nodo.set_g(padre.g + nodo.coste(padre) )
+				#nodo.set_g(padre.g + nodo.coste(padre) )
+				print "nodo seleccionado ", (nodo.x,nodo.y), " nodo padre", (padre.x,padre.y)
 			except:
-				print("Hubo un error extrayendo de la cola")
+				self.error="Hubo un error extrayendo de la cola"
 
 			lista_nodos = self.objeto.adyacentes(nodo)
-
+			print "lista de adyacentes: ", [(x.x,x.y) for x in lista_nodos]
 			for i in lista_nodos:
 				try:
 					if ( not i.esta_abierto() ):
@@ -212,28 +211,45 @@ class A_estrella():
 						h = i.coste(self.objeto.meta)
 						f = g + h
 						i.marcado_abierto()
+						i.padre = nodo
 						''' La cola de prioridad usa por debajo un monticulo (modulo heapq), si se le pasa una tupla usa el primer elemento para la prioridad'''
 						abiertos.put( (f, i) )
+					'''
+						Reorientacion de enlaces
+					'''
 				except:
-					print "Cola al maximo"
+					self.error="ColaOverflowError"
 
 	def ordenar_ruta(self):
-		ruta = []
+		self.ruta = []
 
 		nodo = self.objeto.get_meta()
 
 		if ( nodo.get_padre() ):
 			while nodo != self.objeto.get_inicio():
-				ruta.append(nodo)
+				self.ruta.append(nodo)
 				nodo = nodo.get_padre()
 
-			ruta.append(self.objeto.get_inicio())
-			ruta.reverse()
-
-			for i in range(0, len(ruta)):
-				print(ruta[i].to_srt() + " ")
+			self.ruta.append(self.objeto.get_inicio())
+			self.ruta.reverse()
+			self.ruta = [(node.x,node.y) for node in self.ruta]
+			self.set_solucionable(True)
+			print "Ruta final: ",self.ruta
 		else:
-			print("\n No se ha encontrado solucion")
+			self.error="No se ha encontrado solucion"
+
+
+	def get_ruta(self):
+		return self.ruta
+
+	def set_solucionable(self,value):
+		self.solucionable = value
+
+	def get_solucionable(self):
+		return self.solucionable
+
+	def get_error(self):
+		return self.error 
 
 
 # array = [[("inicio",0),("obstaculo",0),("meta",0)],[("obstaculo",0),("obstaculo",0),("vacio",0)],[("vacio",0),("vacio",0),("vacio",0)]]

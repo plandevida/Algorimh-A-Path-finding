@@ -15,6 +15,8 @@ from PyQt4.QtCore import *
 from Queue import PriorityQueue
 import constants
 from Aestrella import *
+import random
+
 
 
 try:
@@ -37,6 +39,9 @@ class Ui_MainWindow(object):
 	def __init__(self,x,y):
 		self.row_count=x
 		self.column_count=y
+		self.clear_map()
+
+	def clear_map(self):
 		'''
 		Una absoluta pesadilla hasta que he conseguido montar el array de tuplas
 		'''
@@ -45,20 +50,57 @@ class Ui_MainWindow(object):
 		self.start_cell=None
 		self.ending_cell=None
 
-	def clear_map(self):
-		#self.mapa=[(x, y) for x in range(self.row_count) for y in range(self.column_count)]
-		pass
+	def clear_table(self):
+		self.clear_map()
+		for i in range(self.row_count):
+			for j in range(self.column_count):
+						self.centralwidget.findChild(QTableWidget, "table").item(i,j).setBackground(constants.get_empty_background()) 
 
 	# Makes the call to A* algorithm and gets the answer	
 	def generate_solution(self):
 		mp = Mapa(self.mapa)
 		a = A_estrella(mp)
+		if a.get_solucionable():
+			self.print_solution(a.get_ruta())
+		else:
+			print a.get_error()
+
 	# Prints the result of A* on the table 
-	def print_solution(self,queue):
-		self.done()
+	def print_solution(self,route):
+
+		for index in route:
+			if self.mapa[index[0]][index[1]] == None:
+				background=constants.get_waycell_empty_background()
+			elif self.mapa[index[0]][index[1]][0] == "inicio":
+				background=constants.get_waycell_start_background()
+			elif self.mapa[index[0]][index[1]][0] == "meta":
+				background=constants.get_waycell_ending_background()
+			else:
+				background=constants.get_waycell_empty_background()
+
+			self.centralwidget.findChild(QTableWidget, "table").item(index[0],index[1]).setBackground(background)
+
+
+
 	# Method in charge of generating random maps
 	def generate_random_map(self):
-		self.done()
+		self.clear_table()
+		random.seed()
+		obstaculos= int((random.random()%0.3)*len(self.mapa)*len(self.mapa[0]))
+		penalizaciones= int((random.random()%0.3)*len(self.mapa)*len(self.mapa[0]))
+		print obstaculos
+		print penalizaciones
+		for i in range(obstaculos):
+			x=int(random.random()*len(self.mapa))
+			y=int(random.random()*len(self.mapa[0]))
+			self.mapa[x][y] = constants.get_block_cell_value()
+			self.centralwidget.findChild(QTableWidget, "table").item(x,y).setBackground(constants.get_block_background())
+		for i in range(penalizaciones):
+			x=int(random.random()*len(self.mapa))
+			y=int(random.random()*len(self.mapa))
+			self.mapa[x][y] = constants.get_setback_cell_value()
+			self.centralwidget.findChild(QTableWidget, "table").item(x,y).setBackground(constants.get_setback_background())
+
 
 	# Event called when a table cell is clicked
 	def item_clicked(self, index):
@@ -72,10 +114,16 @@ class Ui_MainWindow(object):
 			self.start_cell = (index.row(), index.column())
 			self.centralwidget.findChild(QTableWidget, "table").item(self.start_cell[0],self.start_cell[1]).setBackground(constants.get_start_background())
 			self.mapa[self.start_cell[0]][self.start_cell[1]] = constants.get_start_cell_value()
+			if self.ending_cell == (index.row(), index.column()):
+				self.ending_cell = None
 
 		if self.centralwidget.findChild(QRadioButton,"blockRadio") is self.radioB:
 			self.centralwidget.findChild(QTableWidget, "table").item(index.row(),index.column()).setBackground(constants.get_block_background())
 			self.mapa[index.row()][index.column()] = constants.get_block_cell_value()
+			if self.ending_cell == (index.row(), index.column()):
+				self.ending_cell = None
+			elif self.start_cell == (index.row(), index.column()):
+				self.start_cell = None
 
 		if self.centralwidget.findChild(QRadioButton,"endingRadio") is self.radioB:
 			if self.ending_cell != None:
@@ -84,10 +132,16 @@ class Ui_MainWindow(object):
 			self.ending_cell = (index.row(), index.column())
 			self.centralwidget.findChild(QTableWidget, "table").item(self.ending_cell[0],self.ending_cell[1]).setBackground(constants.get_ending_background())
 			self.mapa[self.ending_cell[0]][self.ending_cell[1]] = constants.get_ending_cell_value()
+			if self.start_cell == (index.row(), index.column()):
+				self.start_cell = None
 
 		if self.centralwidget.findChild(QRadioButton,"setbackRadio") is self.radioB:
 			self.centralwidget.findChild(QTableWidget, "table").item(index.row(),index.column()).setBackground(constants.get_setback_background())
 			self.mapa[index.row()][index.column()] = constants.get_empty_cell_value()
+			if self.ending_cell == (index.row(), index.column()):
+				self.ending_cell = None
+			elif self.start_cell == (index.row(), index.column()):
+				self.start_cell = None
 
 		if self.centralwidget.findChild(QRadioButton,"waypointRadio") is self.radioB:
 			item=self.centralwidget.findChild(QTableWidget, "table").item(index.row(),index.column())
@@ -95,12 +149,11 @@ class Ui_MainWindow(object):
 			item.setBackground(constants.get_waypoint_background())
 			item.setTextAlignment(Qt.AlignHCenter)
 			item.setText(str(len(self.waypoint_priority_queue)))
+			if self.ending_cell == (index.row(), index.column()):
+				self.ending_cell = None
+			elif self.start_cell == (index.row(), index.column()):
+				self.start_cell = None
 
-
-
-			
-
-			
 	# Event called when a radio button is called
 	def radio_clicked(self):
 		self.radioB = self.centralwidget.sender()
@@ -159,6 +212,12 @@ class Ui_MainWindow(object):
 		button_random.clicked.connect(self.generate_random_map)
 		self.gridLayout.addWidget(button_random,1,2,Qt.AlignLeft)
 
+		# Sets the button for map clearing
+		button_clear_map = QPushButton("Clear Map")
+		button_clear_map.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Preferred)
+		button_clear_map.clicked.connect(self.clear_table)
+		self.gridLayout.addWidget(button_clear_map,0,4,2,1,Qt.AlignRight)
+
 		# Sets the radio buttons
 		start = QRadioButton("Inicio",MainWindow)
 		start.setObjectName(_fromUtf8("startRadio"))
@@ -168,7 +227,6 @@ class Ui_MainWindow(object):
 		start.setChecked(True)
 		self.radioB = start
 
-		# Sets the radio buttons
 		ending= QRadioButton("Meta",MainWindow)
 		ending.setObjectName(_fromUtf8("endingRadio"))
 		ending.clicked.connect(self.radio_clicked)
@@ -210,9 +268,6 @@ class Ui_MainWindow(object):
 		QtCore.QMetaObject.connectSlotsByName(MainWindow)
 		# End of elements´ asignment
 
-
-		self.clear_map()
-
 	def retranslateUi(self, MainWindow):
 		MainWindow.setWindowTitle(_translate("MainWindow", "Algoritmo A*", None))
 
@@ -221,7 +276,7 @@ if __name__ == "__main__":
 	import sys
 	app = QtGui.QApplication(sys.argv)
 	MainWindow = QtGui.QMainWindow()
-	ui = Ui_MainWindow(30,30)
+	ui = Ui_MainWindow(50,50)
 	ui.setupUi(MainWindow)
 	MainWindow.show()
 	sys.exit(app.exec_())
