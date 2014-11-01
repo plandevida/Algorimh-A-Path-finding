@@ -88,8 +88,8 @@ class Ui_MainWindow(object):
 		random.seed()
 		obstaculos= int((random.random()%0.3)*len(self.mapa)*len(self.mapa[0]))
 		penalizaciones= int((random.random()%0.3)*len(self.mapa)*len(self.mapa[0]))
-		print obstaculos
-		print penalizaciones
+		print "random obstaculos", obstaculos
+		print "random penalizaciones", penalizaciones
 		for i in range(obstaculos):
 			x=int(random.random()*len(self.mapa))
 			y=int(random.random()*len(self.mapa[0]))
@@ -137,7 +137,7 @@ class Ui_MainWindow(object):
 
 		if self.centralwidget.findChild(QRadioButton,"setbackRadio") is self.radioB:
 			self.centralwidget.findChild(QTableWidget, "table").item(index.row(),index.column()).setBackground(constants.get_setback_background())
-			self.mapa[index.row()][index.column()] = constants.get_empty_cell_value()
+			self.mapa[index.row()][index.column()] = constants.get_setback_cell_value()
 			if self.ending_cell == (index.row(), index.column()):
 				self.ending_cell = None
 			elif self.start_cell == (index.row(), index.column()):

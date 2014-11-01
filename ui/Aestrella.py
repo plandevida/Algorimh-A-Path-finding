@@ -32,12 +32,12 @@ class Mapa():
 					elif ( tipo == "obstaculo" ):
 						fila.append( Nodo(i, j, True, None, 0) )
 					elif ( tipo == "penalizacion" ):
-						fila.append( Nodo(i, j, True, None, array[i][j][1]) )
+						fila.append( Nodo(i, j, False, None, array[i][j][1]) )
 					elif ( tipo == "vacio" ):
 						fila.append( Nodo(i, j, False, None, 0) )
 
 			self.mapa.append(fila)
-
+		print [(self.mapa[i][j].f_prima) for i in range(len(self.mapa)) for j in range(len(self.mapa[0]))]
 	def get_inicio(self):
 		return self.inicio
 
@@ -112,6 +112,7 @@ class Nodo():
 		self.obstaculo = obstaculo
 		self.f_prima = penalizacion
 		self.g = 0
+		self.h = 0
 		self.visitado = False
 		self.abierto = False
 
@@ -134,7 +135,7 @@ class Nodo():
 		coste desde el nodo dado hasta este
 	'''
 	def coste(self, nodo):
-		return math.sqrt(math.pow(self.x-nodo.x,2)+math.pow(self.y-nodo.y,2)) + self.f_prima
+		return (math.sqrt(math.pow(self.x-nodo.x,2)+math.pow(self.y-nodo.y,2)) + nodo.f_prima)
 
 	def es_obstaculo(self):
 		return self.obstaculo
@@ -178,12 +179,13 @@ class A_estrella():
 		else:
 			self.error="No tiene los metodos genericos"
 
+	''' No conseguia aclararme asi que me lo he reimplementado de nuevo
 	def calcula_ruta(self):
 
-		''' tupla con la dimension del mapa'''
+		#tupla con la dimension del mapa
 		dimension = self.objeto.dim()
 
-		''' No es lo que piensas EB, cochino'''
+		#No es lo que piensas EB, cochino
 		abiertos = PriorityQueue(maxsize=(dimension[0] * dimension[1]))
 
 		nodo = self.objeto.get_inicio()
@@ -206,19 +208,71 @@ class A_estrella():
 			print "lista de adyacentes: ", [(x.x,x.y) for x in lista_nodos]
 			for i in lista_nodos:
 				try:
-					if ( not i.esta_abierto() ):
-						g = nodo.g + nodo.coste(i)
-						h = i.coste(self.objeto.meta)
-						f = g + h
+					if  not i.esta_abierto() :
+						i.g = nodo.g + nodo.coste(i)
+						i.h = i.coste(self.objeto.meta)
+						i.f = i.g + i.h
 						i.marcado_abierto()
 						i.padre = nodo
-						''' La cola de prioridad usa por debajo un monticulo (modulo heapq), si se le pasa una tupla usa el primer elemento para la prioridad'''
-						abiertos.put( (f, i) )
-					'''
-						Reorientacion de enlaces
-					'''
+						#La cola de prioridad usa por debajo un monticulo (modulo heapq), si se le pasa una tupla usa el primer elemento para la prioridad
+						abiertos.put( (i.f, i) )
+					elif i.esta_abierto():
+						print "uno"
+						if i.esta_visitado() and i.padre != nodo:
+							print "dos"
+							coste_reenlace = nodo.g + nodo.coste(i)
+							print "nodo ",(nodo.x,nodo.y),"coste reenlace ",coste_reenlace, " coste actual ", i.f
+							if coste_reenlace < i.f:
+								print "tres"
+								i.g= coste_reenlace
+								i.f= i.g+i.h
+								i.padre = nodo
+
 				except:
 					self.error="ColaOverflowError"
+	'''
+
+	def calcula_ruta(self):
+
+		''' tupla con la dimension del mapa'''
+		dimension = self.objeto.dim()
+
+		''' No es lo que piensas EB, cochino'''
+		meta = self.objeto.get_meta()
+		abiertos = PriorityQueue(maxsize=(dimension[0] * dimension[1]))
+		abiertos.put((0,self.objeto.get_inicio()))
+		nodo = self.objeto.get_inicio()
+		nodo.padre=self.objeto.get_inicio()
+		while nodo != meta and not abiertos.empty():
+			nodo=abiertos.get()[1]
+			nodo.marcado_abierto()
+			nodo.marcado_visitado()
+			lista_nodos = self.objeto.adyacentes(nodo)
+			print ">>>> nodo seleccionado ", (nodo.x,nodo.y), " nodo padre", (nodo.padre.x,nodo.padre.y), " nodo g", (nodo.g), "nodo h", nodo.h
+			print "lista de adyacentes: ", [(x.x,x.y) for x in lista_nodos]
+			for i in lista_nodos:
+				try:
+					if  not i.esta_abierto() :
+						i.g = nodo.g + nodo.coste(i)
+						i.h = i.coste(self.objeto.meta)
+						i.f = i.g + i.h
+						i.padre = nodo
+						i.marcado_abierto()
+						print (i.x,i.y), " ", nodo.coste(i)," ", i.f_prima
+						''' La cola de prioridad usa por debajo un monticulo (modulo heapq), si se le pasa una tupla usa el primer elemento para la prioridad'''
+						abiertos.put( (i.g, i) )
+					elif i.esta_abierto():
+						coste_reenlace = nodo.g + nodo.coste(i)
+						print "padre", (nodo.x,nodo.y),"nodo ",(i.x,i.y),"coste reenlace ",coste_reenlace, " coste actual ", i.g
+						if coste_reenlace < i.g:
+							print "reenlace hecho"
+							i.g= coste_reenlace
+							i.f= i.g+i.h
+							i.padre = nodo
+
+				except:
+					self.error="ColaOverflowError"
+			
 
 	def ordenar_ruta(self):
 		self.ruta = []
