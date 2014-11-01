@@ -12,6 +12,11 @@
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
+from Queue import PriorityQueue
+import constants
+import Aestrella
+
+
 try:
 	_fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
@@ -28,21 +33,80 @@ except AttributeError:
 
 class Ui_MainWindow(object):
 	
-	def __init__(self):
-		self.mapa=[]
-		self.radioB=None
-	def solve_map(self):
+	# Initializes the needed variables
+	def __init__(self,x,y):
+		self.row_count=x
+		self.column_count=y
+		'''
+		Una absoluta pesadilla hasta que he conseguido montar el array de tuplas
+		'''
+		self.mapa=[[None for y in range(self.column_count)] for x in range(self.row_count)]
+		self.waypoint_priority_queue = []
+		self.start_cell=None
+		self.ending_cell=None
+
+	def clear_map(self):
+		#self.mapa=[(x, y) for x in range(self.row_count) for y in range(self.column_count)]
+		pass
+
+	# Makes the call to A* algorithm and gets the answer	
+	def generate_solution(self):
+		self.done()
+	# Prints the result of A* on the table 
+	def print_solution(self,queue):
+		self.done()
+	# Method in charge of generating random maps
+	def generate_random_map(self):
 		self.done()
 
 	# Event called when a table cell is clicked
 	def item_clicked(self, index):
-		if self.centralwidget.findChildren(QRadioButton,"startRadio") is self.radioB:
+		
+		#print index.row(), index.column()
+	
+		if self.centralwidget.findChild(QRadioButton,"startRadio") is self.radioB:
+			if self.start_cell != None:
+				self.centralwidget.findChild(QTableWidget, "table").item(self.start_cell[0],self.start_cell[1]).setBackground(constants.get_empty_background())
+				self.mapa[self.start_cell[0]][self.start_cell[1]] = constants.get_empty_cell_value()
+			self.start_cell = (index.row(), index.column())
+			self.centralwidget.findChild(QTableWidget, "table").item(self.start_cell[0],self.start_cell[1]).setBackground(constants.get_start_background())
+			self.mapa[self.start_cell[0]][self.start_cell[1]] = constants.get_start_cell_value()
+
+		if self.centralwidget.findChild(QRadioButton,"blockRadio") is self.radioB:
+			self.centralwidget.findChild(QTableWidget, "table").item(index.row(),index.column()).setBackground(constants.get_block_background())
+			self.mapa[index.row()][index.column()] = constants.get_block_cell_value()
+
+		if self.centralwidget.findChild(QRadioButton,"endingRadio") is self.radioB:
+			if self.ending_cell != None:
+				self.centralwidget.findChild(QTableWidget, "table").item(self.ending_cell[0],self.ending_cell[1]).setBackground(constants.get_empty_background())
+				self.mapa[self.ending_cell[0]][self.ending_cell[1]] = constants.get_empty_cell_value()
+			self.ending_cell = (index.row(), index.column())
+			self.centralwidget.findChild(QTableWidget, "table").item(self.ending_cell[0],self.ending_cell[1]).setBackground(constants.get_ending_background())
+			self.mapa[self.ending_cell[0]][self.ending_cell[1]] = constants.get_start_cell_value()
+
+		if self.centralwidget.findChild(QRadioButton,"setbackRadio") is self.radioB:
+			self.centralwidget.findChild(QTableWidget, "table").item(index.row(),index.column()).setBackground(constants.get_setback_background())
+			self.mapa[index.row()][index.column()] = constants.get_empty_cell_value()
+
+		if self.centralwidget.findChild(QRadioButton,"waypointRadio") is self.radioB:
+			item=self.centralwidget.findChild(QTableWidget, "table").item(index.row(),index.column())
+			self.waypoint_priority_queue.insert(len(self.waypoint_priority_queue),item)
+			item.setBackground(constants.get_waypoint_background())
+			item.setTextAlignment(Qt.AlignHCenter)
+			item.setText(str(len(self.waypoint_priority_queue)))
+
+
+
 			
 
-	def radio_clicked(self,alredy_clicked):
+			
+	# Event called when a radio button is called
+	def radio_clicked(self):
 		self.radioB = self.centralwidget.sender()
 
+	# Even that initializes the ui structure
 	def setupUi(self, MainWindow):
+
 		MainWindow.setObjectName(_fromUtf8("MainWindow"))
 		# Maximizes main window
 		MainWindow.showMaximized()
@@ -57,39 +121,43 @@ class Ui_MainWindow(object):
 		self.gridLayout.setSizeConstraint(QtGui.QLayout.SetNoConstraint)
 		self.gridLayout.setMargin(20)
 		self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
+
 		# Sets the elements in the grid layout
+
 		#Sets the table
-		table = QTableWidget(50,40)
+		table = QTableWidget(self.row_count,self.column_count)
 		table.setObjectName(_fromUtf8("table"))
 		table.setDragEnabled(False)
 		table.setSelectionBehavior(QAbstractItemView.SelectItems)
 		table.setSelectionMode(QAbstractItemView.SingleSelection)
-
+		# Locks edit mode on every cell of the table
 		for i in range(table.rowCount()):
 			for j in range(table.columnCount()):
 				item = QtGui.QTableWidgetItem()
 				# execute the line below to every item you need locked
 				item.setFlags(QtCore.Qt.ItemIsEnabled)
 				table.setItem(i, j, item)
-		#table.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-		#table.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
 		table.horizontalHeader().setResizeMode(QHeaderView.Stretch)
 		table.horizontalHeader().setVisible(False)
 		table.verticalHeader().setResizeMode(QHeaderView.Stretch)
 		table.verticalHeader().setVisible(False)
-		#Configures the signal listener
 		table.clicked.connect(self.item_clicked)
-
 		self.gridLayout.addWidget(table,5,0,1,10)
+
 		#Sets the button for solving
 		button_solve = QPushButton("Resolver")
 		button_solve.setMinimumWidth(160)
 		button_solve.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Preferred)
+		button_solve.clicked.connect(self.generate_solution)
 		self.gridLayout.addWidget(button_solve,0,5,2,1,Qt.AlignRight)
+
 		# Sets the button for randomizing maps
 		button_random = QPushButton("Random Map")
 		button_random.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Minimum)
+		button_random.clicked.connect(self.generate_random_map)
 		self.gridLayout.addWidget(button_random,1,2,Qt.AlignLeft)
+
 		# Sets the radio buttons
 		start = QRadioButton("Inicio",MainWindow)
 		start.setObjectName(_fromUtf8("startRadio"))
@@ -99,31 +167,33 @@ class Ui_MainWindow(object):
 		start.setChecked(True)
 		self.radioB = start
 
+		# Sets the radio buttons
 		ending= QRadioButton("Meta",MainWindow)
-		ending.setObjectName(_fromUtf8("Meta"))
+		ending.setObjectName(_fromUtf8("endingRadio"))
 		ending.clicked.connect(self.radio_clicked)
 		ending.setAutoExclusive(True)
 		self.gridLayout.addWidget(ending,0,1)
 
 		block= QRadioButton("Bloque",MainWindow)
-		block.setObjectName(_fromUtf8("Bloque"))
+		block.setObjectName(_fromUtf8("blockRadio"))
 		block.clicked.connect(self.radio_clicked)
 		block.setAutoExclusive(True)
 		self.gridLayout.addWidget(block,0,2)
 
 		setback= QRadioButton("Penalizacion",MainWindow)
-		setback.setObjectName(_fromUtf8("Penalizacion"))
+		setback.setObjectName(_fromUtf8("setbackRadio"))
 		setback.clicked.connect(self.radio_clicked)
 		setback.setAutoExclusive(True)
 		self.gridLayout.addWidget(setback,1,0)
 
 		waypoint= QRadioButton("Waypoint",MainWindow)
-		waypoint.setObjectName(_fromUtf8("Waypoint"))
+		waypoint.setObjectName(_fromUtf8("waypointRadio"))
 		waypoint.clicked.connect(self.radio_clicked)
 		waypoint.setAutoExclusive(True)
 		self.gridLayout.addWidget(waypoint,1,1)
 
 		MainWindow.setCentralWidget(self.centralwidget)
+
 		# Menus
 		self.menubar = QtGui.QMenuBar(MainWindow)
 		self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 21))
@@ -139,15 +209,18 @@ class Ui_MainWindow(object):
 		QtCore.QMetaObject.connectSlotsByName(MainWindow)
 		# End of elements´ asignment
 
+
+		self.clear_map()
+
 	def retranslateUi(self, MainWindow):
-		MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
+		MainWindow.setWindowTitle(_translate("MainWindow", "Algoritmo A*", None))
 
 
 if __name__ == "__main__":
 	import sys
 	app = QtGui.QApplication(sys.argv)
 	MainWindow = QtGui.QMainWindow()
-	ui = Ui_MainWindow()
+	ui = Ui_MainWindow(30,40)
 	ui.setupUi(MainWindow)
 	MainWindow.show()
 	sys.exit(app.exec_())

@@ -19,21 +19,21 @@ class VentanaSeleccion(QDialog, Ui_Dialog):
 		self.bttn_aceptar.clicked.connect(self.aceptar_listener)
 		self.bttn_cancelar.clicked.connect(self.reject)
 
-class Tablero(QMainWindow, Ui_MainWindow):
+# class Tablero(QMainWindow, Ui_MainWindow):
 
-	def boton_clicked(self):
-		boton = self.sender()
-		indice = self.gridLayout.indexOf(boton)
-		posicion = self.gridLayout.getItemPosition(indice)
-		print "boton", boton, "at row/col", posicion[:2], "size ", boton.size()
+# 	def boton_clicked(self):
+# 		boton = self.sender()
+# 		indice = self.gridLayout.indexOf(boton)
+# 		posicion = self.gridLayout.getItemPosition(indice)
+# 		print "boton", boton, "at row/col", posicion[:2], "size ", boton.size()
 
-	def __init__(self, x, y):
-		QMainWindow.__init__(self)
+# 	def __init__(self, x, y):
+# 		QMainWindow.__init__(self)
 
-		self.ui = Ui_MainWindow
-		self.setupUi(self)
+# 		self.ui = Ui_MainWindow
+# 		self.setupUi(self)
 				
-		print(self.gridLayout.maximumSize())
+# 		print(self.gridLayout.maximumSize())
 
 		
 

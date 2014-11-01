@@ -15,27 +15,22 @@ class Mapa():
 
 			fila = []
 			for j in range(0, len(array[i])):
-				if ( array[i][j] == None ):
+				tipo = array[i][j][0]
+
+				if ( tipo == "inicio" ):
+					nodo = Nodo(i, j, False, None, 0)
+					fila.append(nodo)
+					self.inicio = nodo
+				elif ( tipo == "meta" ):
+					nodo = Nodo(i, j, False, None, 0)
+					fila.append(nodo)
+					self.meta = nodo
+				elif ( tipo == "obstaculo" ):
+					fila.append( Nodo(i, j, True, None, 0) )
+				elif ( tipo == "penalizacion" ):
+					fila.append( Nodo(i, j, True, None, array[i][j][1]) )
+				elif ( tipo == "vacio" ):
 					fila.append( Nodo(i, j, False, None, 0) )
-				
-				else:
-					tipo = array[i][j][0]
-
-					if ( tipo == "inicio" ):
-						nodo = Nodo(i, j, False, None, 0)
-						fila.append(nodo)
-						self.inicio = nodo
-					elif ( tipo == "meta" ):
-						nodo = Nodo(i, j, False, None, 0)
-						fila.append(nodo)
-						self.meta = nodo
-					elif ( tipo == "obstaculo" ):
-						fila.append( Nodo(i, j, True, None, 0) )
-					elif ( tipo == "penalizacion" ):
-						fila.append( Nodo(i, j, True, None, array[i][j][1]) )
-					elif ( tipo == "vacio" ):
-						fila.append( Nodo(i, j, False, None, 0) )
-
 
 			self.mapa.append(fila)
 
@@ -223,10 +218,8 @@ class A_estrella():
 		else:
 			print("\n No se ha encontrado solucion")
 
-	def ruta(self):
-		return ruta
 
-array = [[("inicio",0),("obstaculo",0),("meta",0)],[("obstaculo",0),None,("vacio",0)],[("vacio",0),("vacio",0),("vacio",0)]]
+array = [[("inicio",0),("obstaculo",0),("meta",0)],[("obstaculo",0),("obstaculo",0),("vacio",0)],[("vacio",0),("vacio",0),("vacio",0)]]
 mapa = Mapa(array)
 a = A_estrella(mapa)
 
