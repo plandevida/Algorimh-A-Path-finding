@@ -238,7 +238,8 @@ class A_estrella():
 
 		''' tupla con la dimension del mapa'''
 		dimension = self.objeto.dim()
-
+		''' standard output takes a lot of time, use for debug purposes only '''
+		debugMode = False
 		''' No es lo que piensas EB, cochino'''
 		meta = self.objeto.get_meta()
 		abiertos = PriorityQueue(maxsize=(dimension[0] * dimension[1]))
@@ -250,8 +251,8 @@ class A_estrella():
 			nodo.marcado_abierto()
 			nodo.marcado_visitado()
 			lista_nodos = self.objeto.adyacentes(nodo)
-			print ">>>> nodo seleccionado ", (nodo.x,nodo.y), " nodo padre", (nodo.padre.x,nodo.padre.y), " nodo g", (nodo.g), "nodo h", nodo.h
-			print "lista de adyacentes: ", [(x.x,x.y) for x in lista_nodos]
+			if debugMode: print ">>>> nodo seleccionado ", (nodo.x,nodo.y), " nodo padre", (nodo.padre.x,nodo.padre.y), " nodo g", (nodo.g), "nodo h", nodo.h
+			if debugMode: print "lista de adyacentes: ", [(x.x,x.y) for x in lista_nodos]
 			for i in lista_nodos:
 				try:
 					if  not i.esta_abierto() :
@@ -260,14 +261,14 @@ class A_estrella():
 						i.f = i.g + i.h
 						i.padre = nodo
 						i.marcado_abierto()
-						print (i.x,i.y), " ", nodo.coste(i)," ", i.f_prima
+						if debugMode: print (i.x,i.y), " ", nodo.coste(i)," ", i.f_prima
 						''' La cola de prioridad usa por debajo un monticulo (modulo heapq), si se le pasa una tupla usa el primer elemento para la prioridad'''
 						abiertos.put( (i.g, i) )
 					elif i.esta_abierto():
 						coste_reenlace = nodo.g + nodo.coste(i)
-						print "padre", (nodo.x,nodo.y),"nodo ",(i.x,i.y),"coste reenlace ",coste_reenlace, " coste actual ", i.g
+						if debugMode: print "padre", (nodo.x,nodo.y),"nodo ",(i.x,i.y),"coste reenlace ",coste_reenlace, " coste actual ", i.g
 						if coste_reenlace < i.g:
-							print "reenlace hecho"
+							if debugMode: print "reenlace hecho"
 							i.g= coste_reenlace
 							i.f= i.g+i.h
 							i.padre = nodo
@@ -290,7 +291,7 @@ class A_estrella():
 			self.ruta.reverse()
 			self.ruta = [(node.x,node.y) for node in self.ruta]
 			self.set_solucionable(True)
-			print "Ruta final: ",self.ruta
+			
 		else:
 			self.error="No se ha encontrado solucion"
 
