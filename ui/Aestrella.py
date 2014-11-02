@@ -1,5 +1,6 @@
-import math
+import math,constants
 from Queue import PriorityQueue
+
 
 class Mapa():
 	def __init__(self, array):
@@ -251,8 +252,8 @@ class A_estrella():
 			nodo.marcado_abierto()
 			nodo.marcado_visitado()
 			lista_nodos = self.objeto.adyacentes(nodo)
-			if debugMode: print ">>>> nodo seleccionado ", (nodo.x,nodo.y), " nodo padre", (nodo.padre.x,nodo.padre.y), " nodo g", (nodo.g), "nodo h", nodo.h
-			if debugMode: print "lista de adyacentes: ", [(x.x,x.y) for x in lista_nodos]
+			if constants.debugMode(): print ">>>> nodo seleccionado ", (nodo.x,nodo.y), " nodo padre", (nodo.padre.x,nodo.padre.y), " nodo g", (nodo.g), "nodo h", nodo.h
+			if constants.debugMode(): print "lista de adyacentes: ", [(x.x,x.y) for x in lista_nodos]
 			for i in lista_nodos:
 				try:
 					if  not i.esta_abierto() :
@@ -261,14 +262,14 @@ class A_estrella():
 						i.f = i.g + i.h
 						i.padre = nodo
 						i.marcado_abierto()
-						if debugMode: print (i.x,i.y), " ", nodo.coste(i)," ", i.f_prima
+						if constants.debugMode(): print (i.x,i.y), " ", nodo.coste(i)," ", i.f_prima
 						''' La cola de prioridad usa por debajo un monticulo (modulo heapq), si se le pasa una tupla usa el primer elemento para la prioridad'''
 						abiertos.put( (i.g, i) )
 					elif i.esta_abierto():
 						coste_reenlace = nodo.g + nodo.coste(i)
-						if debugMode: print "padre", (nodo.x,nodo.y),"nodo ",(i.x,i.y),"coste reenlace ",coste_reenlace, " coste actual ", i.g
+						if constants.debugMode(): print "padre", (nodo.x,nodo.y),"nodo ",(i.x,i.y),"coste reenlace ",coste_reenlace, " coste actual ", i.g
 						if coste_reenlace < i.g:
-							if debugMode: print "reenlace hecho"
+							if constants.debugMode(): print "reenlace hecho"
 							i.g= coste_reenlace
 							i.f= i.g+i.h
 							i.padre = nodo

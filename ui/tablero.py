@@ -8,6 +8,9 @@
 #      by: Emilio Álvarez Piñeiro
 #
 # WARNING! All changes made in this file will be lost!
+'''
+For test values lookup constants.py
+'''
 
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtGui import *
@@ -211,7 +214,8 @@ class Ui_MainWindow(object):
 			else:
 				self.error = local_data.a.get_error()
 
-	'''attemp to define multiprocessing waypoints '''
+	'''attemp to define multiprocessing waypoints
+	works but blocks with tables too big, queue size limitations i suppose, let´s try pipes '''
 	def generate_solution_multiprocess(self):
 
 		self.doable = True
@@ -248,7 +252,14 @@ class Ui_MainWindow(object):
 			self.popup_window = Ui_Error_Dialog(self.multiprocess_error_queue.get())
 			self.popup_window.setupUi(self.Dialog)
 			self.Dialog.show()
+	'''attemp to define multiprocessing waypoints with pipes
+	works fine
 
+	-Tests
+		1M cell table:
+		- 1m54s on secuential(25% cpu usage)
+		- 1m14s on parrallel(75% cpu usage)
+	'''
 	def generate_solution_multiprocess_pipes(self):
 
 		doable = True
@@ -258,10 +269,7 @@ class Ui_MainWindow(object):
 		waypoint_end=self.start_cell
 		route = []
 		processes = []
-		#self.multiprocess_result_queue = multiprocessing.Queue()
-		#self.multiprocess_error_queue = multiprocessing.Queue()
 		route_pipes = []
-
 		route_aux=[]
 		for i in range(len(self.waypoint_priority_queue)+1):
 			waypoint_start = waypoint_end
@@ -279,7 +287,7 @@ class Ui_MainWindow(object):
 			print "proces ",i, " recieved"
 		if doable:
 			route = [(route_aux[y][x][0],route_aux[y][x][1])  for y in range(len(route_aux)) for x in range(len(route_aux[y]))]
-			#print ">>>>>>>>>>>>>>>>>>[DEBUG] ruta final waypoints: ",self.route
+			print ">>>>>>>>>>>>>>>>>>[DEBUG] ruta final waypoints: ",route
 			self.print_solution(route)
 		else:
 			self.Dialog = QtGui.QDialog()
@@ -427,7 +435,7 @@ class Ui_MainWindow(object):
 		self.gridLayout.addWidget(table,5,0,1,10)
 
 		#Sets the button for solving
-		button_solve = QPushButton("Resolver")
+		button_solve = QPushButton("Solve")
 		button_solve.setMinimumWidth(160)
 		button_solve.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Preferred)
 		button_solve.clicked.connect(self.generate_solution)
@@ -452,7 +460,7 @@ class Ui_MainWindow(object):
 		self.gridLayout.addWidget(button_clear_route,0,3,2,1,Qt.AlignRight)
 
 		# Sets the radio buttons
-		start = QRadioButton("Inicio",MainWindow)
+		start = QRadioButton("Start",MainWindow)
 		start.setObjectName(_fromUtf8("startRadio"))
 		start.clicked.connect(self.radio_clicked)
 		start.setAutoExclusive(True)
@@ -460,19 +468,19 @@ class Ui_MainWindow(object):
 		start.setChecked(True)
 		self.radioB = start
 
-		ending= QRadioButton("Meta",MainWindow)
+		ending= QRadioButton("End",MainWindow)
 		ending.setObjectName(_fromUtf8("endingRadio"))
 		ending.clicked.connect(self.radio_clicked)
 		ending.setAutoExclusive(True)
 		self.gridLayout.addWidget(ending,0,1)
 
-		block= QRadioButton("Bloque",MainWindow)
+		block= QRadioButton("Block",MainWindow)
 		block.setObjectName(_fromUtf8("blockRadio"))
 		block.clicked.connect(self.radio_clicked)
 		block.setAutoExclusive(True)
 		self.gridLayout.addWidget(block,0,2)
 
-		setback= QRadioButton("Penalizacion",MainWindow)
+		setback= QRadioButton("Setback",MainWindow)
 		setback.setObjectName(_fromUtf8("setbackRadio"))
 		setback.clicked.connect(self.radio_clicked)
 		setback.setAutoExclusive(True)
@@ -502,7 +510,7 @@ class Ui_MainWindow(object):
 		# End of elements´ asignment
 
 	def retranslateUi(self, MainWindow):
-		MainWindow.setWindowTitle(_translate("MainWindow", "Algoritmo A*", None))
+		MainWindow.setWindowTitle(_translate("MainWindow", "Algorithm A*", None))
 
 '''For some reason i cant subclass Process
 '''
@@ -547,7 +555,7 @@ if __name__ == "__main__":
 	import sys
 	app = QtGui.QApplication(sys.argv)
 	MainWindow = QtGui.QMainWindow()
-	ui = Ui_MainWindow(1000,1000,AllowMultiProcessing=True)
+	ui = Ui_MainWindow(constants.get_table_x(),constants.get_table_y(),AllowMultiProcessing=constants.allow_multiprocessing())
 	ui.setupUi(MainWindow)
 	MainWindow.show()
 	sys.exit(app.exec_())

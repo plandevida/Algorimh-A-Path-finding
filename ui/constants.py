@@ -4,6 +4,18 @@ from PyQt4.Qt import *
 from PyQt4.QtGui import *
 
 # Define constant values 
+
+''' A* constants'''
+def debugMode():
+	return False
+
+'''Main Ui constants'''
+def get_table_x():
+	return 100
+def get_table_y():
+	return 100
+def allow_multiprocessing():
+	return False
 '''
 	Background color constants
 '''
