@@ -26,11 +26,13 @@ def get_waypoint_background():
 def get_waycell_empty_background():
 	return QBrush ( Qt.blue, Qt.SolidPattern )
 def get_waycell_start_background():
-	return QBrush ( Qt.blue, Qt.CrossPattern )
+	return QBrush ( Qt.green, Qt.CrossPattern )
 def get_waycell_ending_background():
-	return QBrush ( Qt.blue, Qt.Dense2Pattern )
+	return QBrush ( Qt.red, Qt.Dense2Pattern )
 def get_waycell_waypoint_background():
 	return QBrush ( Qt.blue, Qt.Dense7Pattern )
+def get_waycell_setback_background():
+	return QBrush ( Qt.darkBlue, Qt.SolidPattern )
 
 	'''
 		Guis map constants
@@ -40,8 +42,11 @@ def get_empty_cell_value():
 def get_block_cell_value():
 	return ("obstaculo",0)
 def get_setback_cell_value():
-	return ("penalizacion",0.2)
+	return ("penalizacion",0.1)
 def get_start_cell_value():
 	return ("inicio",0)
 def get_ending_cell_value():
 	return ("meta",0)
+def get_waypoint_cell_value():
+	return ("waypoint",0)
+

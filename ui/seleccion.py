@@ -23,7 +23,7 @@ except AttributeError:
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig)
 
-class Ui_Dialog(object):
+class Ui_Selection_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName(_fromUtf8("Dialog"))
         Dialog.resize(400, 289)
@@ -43,10 +43,10 @@ class Ui_Dialog(object):
         self.label_3 = QtGui.QLabel(Dialog)
         self.label_3.setGeometry(QtCore.QRect(125, 30, 161, 20))
         self.label_3.setObjectName(_fromUtf8("label_3"))
-        self.bttn_aceptar = QtGui.QPushButton(Dialog)
+        self.bttn_aceptar = QtGui.QPushButton("Aceptar")
         self.bttn_aceptar.setGeometry(QtCore.QRect(210, 240, 75, 23))
         self.bttn_aceptar.setObjectName(_fromUtf8("bttn_aceptar"))
-        self.bttn_cancelar = QtGui.QPushButton(Dialog)
+        self.bttn_cancelar = QtGui.QPushButton("Cancelar")
         self.bttn_cancelar.setGeometry(QtCore.QRect(300, 240, 75, 23))
         self.bttn_cancelar.setObjectName(_fromUtf8("bttn_cancelar"))
 

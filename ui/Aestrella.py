@@ -35,9 +35,11 @@ class Mapa():
 						fila.append( Nodo(i, j, False, None, array[i][j][1]) )
 					elif ( tipo == "vacio" ):
 						fila.append( Nodo(i, j, False, None, 0) )
+					else:
+						fila.append( Nodo(i, j, False, None, 0) )
 
 			self.mapa.append(fila)
-		print [(self.mapa[i][j].f_prima) for i in range(len(self.mapa)) for j in range(len(self.mapa[0]))]
+		#print [(self.mapa[i][j].f_prima) for i in range(len(self.mapa)) for j in range(len(self.mapa[0]))]
 	def get_inicio(self):
 		return self.inicio
 
@@ -179,7 +181,7 @@ class A_estrella():
 		else:
 			self.error="No tiene los metodos genericos"
 
-	''' No conseguia aclararme asi que me lo he reimplementado de nuevo
+	''' No conseguia aclararme para hacer la reasignacion de enlaces asi que me lo he reimplementado de nuevo
 	def calcula_ruta(self):
 
 		#tupla con la dimension del mapa
