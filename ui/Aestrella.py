@@ -3,14 +3,14 @@ from Queue import PriorityQueue
 
 
 class Mapa():
-	def __init__(self, array):
+	def __init__(self, array,inicio,meta):
 		'''
 			Formato del array para el mapa
 			array[i][j] =("",1)
 		'''
 		self.mapa = []
-		self.inicio = None
 		self.meta = None
+		self.inicio = None
 
 		for i in range(0, len(array)):
 
@@ -21,7 +21,7 @@ class Mapa():
 					fila.append( Nodo(i, j, False, None, 0) )
 				else:
 					tipo = array[i][j][0]
-
+					'''
 					if ( tipo == "inicio" ):
 						nodo = Nodo(i, j, False, None, 0)
 						fila.append(nodo)
@@ -30,7 +30,8 @@ class Mapa():
 						nodo = Nodo(i, j, False, None, 0)
 						fila.append(nodo)
 						self.meta = nodo
-					elif ( tipo == "obstaculo" ):
+					'''
+					if ( tipo == "obstaculo" ):
 						fila.append( Nodo(i, j, True, None, 0) )
 					elif ( tipo == "penalizacion" ):
 						fila.append( Nodo(i, j, False, None, array[i][j][1]) )
@@ -40,6 +41,13 @@ class Mapa():
 						fila.append( Nodo(i, j, False, None, 0) )
 
 			self.mapa.append(fila)
+		''' Si el inicio y meta se pasa por parametro nos podemos ahorrar hacer un deepcopy del array por parametro'''
+		if inicio != None:
+			self.inicio = Nodo(inicio[0],inicio[1],False,None,0)
+			self.mapa[inicio[0]][inicio[1]] = self.inicio
+		if meta != None:
+			self.meta = Nodo(meta[0],meta[1],False,None,0)
+			self.mapa[meta[0]][meta[1]] = self.meta
 		#print [(self.mapa[i][j].f_prima) for i in range(len(self.mapa)) for j in range(len(self.mapa[0]))]
 	def get_inicio(self):
 		return self.inicio
@@ -316,3 +324,47 @@ class A_estrella():
 
 # print("\n Finish")
 
+'''
+def __init__(self, array,inicio,meta):
+		
+			Formato del array para el mapa
+			array[i][j] =("",1)
+		
+		self.mapa = []
+
+		for i in range(0, len(array)):
+
+			fila = []
+			for j in range(0, len(array[i])):
+				
+				if array[i][j] == None:
+					fila.append( Nodo(i, j, False, None, 0) )
+				else:
+					tipo = array[i][j][0]
+					
+					if ( tipo == "inicio" ):
+						nodo = Nodo(i, j, False, None, 0)
+						fila.append(nodo)
+						self.inicio = nodo
+					elif ( tipo == "meta" ):
+						nodo = Nodo(i, j, False, None, 0)
+						fila.append(nodo)
+						self.meta = nodo
+					
+					elif ( tipo == "obstaculo" ):
+						fila.append( Nodo(i, j, True, None, 0) )
+					elif ( tipo == "penalizacion" ):
+						fila.append( Nodo(i, j, False, None, array[i][j][1]) )
+					elif ( tipo == "vacio" ):
+						fila.append( Nodo(i, j, False, None, 0) )
+					else:
+						fila.append( Nodo(i, j, False, None, 0) )
+
+			self.mapa.append(fila)
+		Si el inicio y meta se pasa por parametro nos podemos ahorrar hacer un deepcopy del array por parametro
+		self.inicio = Nodo(inicio[0],inicio[1],False,None,0)
+		self.mapa[inicio[0]][inicio[1]] = self.inicio
+		self.meta = Nodo(meta[0],meta[1],False,None,0)
+		self.mapa[meta[0]][meta[1]] = self.meta
+		#print [(self.mapa[i][j].f_prima) for i in range(len(self.mapa)) for j in range(len(self.mapa[0]))]
+		'''

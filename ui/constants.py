@@ -9,6 +9,14 @@ from PyQt4.QtGui import *
 def debugMode():
 	return False
 
+''' Constants for random in-route apparitions '''
+def get_random_background():
+	return QBrush ( Qt.green, Qt.CrossPattern )
+def get_random_cell_value():
+	return ("penalizacion", 15)
+def get_in_cell_background():
+	return QBrush ( Qt.green, Qt.CrossPattern )
+
 '''Main Ui constants'''
 def get_table_x():
 	return 100

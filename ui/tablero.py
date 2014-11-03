@@ -90,7 +90,7 @@ class Ui_MainWindow(object):
 	def generate_solution(self):
 
 		if len(self.waypoint_priority_queue) == 0 or (self.start_cell == None or self.ending_cell == None):
-			mp = Mapa(self.mapa)
+			mp = Mapa(self.mapa, self.start_cell,self.ending_cell)
 			a = A_estrella(mp)
 			if a.get_solucionable():
 				self.print_solution(a.get_ruta())
@@ -102,10 +102,12 @@ class Ui_MainWindow(object):
 		else:
 
 			if self.AllowMultiProcessing == True: 
-				self.generate_solution_multiprocess_pipes()
 				print "multiprocessing"
+				self.generate_solution_multiprocess_pipes()
+				
 
 			else:
+				print "no multiprocessing"
 				doable = True
 				error = ""
 				start = self.start_cell
@@ -121,12 +123,14 @@ class Ui_MainWindow(object):
 					else:
 						waypoint_end = end
 					print ">>>>>>>>>>>>>>>>>>[DEBUG] waypoint_start ", waypoint_start, " waypoint_end ", waypoint_end
+					'''
 					mp_aux = copy.deepcopy(self.mapa)
 					if end != None : mp_aux[end[0]][end[1]] = constants.get_empty_cell_value()
 					if start != None : mp_aux[start[0]][start[1]] = constants.get_empty_cell_value()
 					if waypoint_start != None: mp_aux[waypoint_start[0]][waypoint_start[1]] = constants.get_start_cell_value()
 					if waypoint_end != None:mp_aux[waypoint_end[0]][waypoint_end[1]] = constants.get_ending_cell_value()
-					mp = Mapa(mp_aux)
+					'''
+					mp = Mapa(self.mapa, waypoint_start, waypoint_end)
 					a = A_estrella(mp)
 					doable = doable and a.get_solucionable()
 					if a.get_solucionable():
@@ -144,7 +148,7 @@ class Ui_MainWindow(object):
 					self.popup_window = Ui_Error_Dialog(error)
 					self.popup_window.setupUi(self.Dialog)
 					self.Dialog.show()
-				print "no multiprocessing"
+				
 					
 				
 	''' attemp to define multithreading waypoints
@@ -193,16 +197,18 @@ class Ui_MainWindow(object):
 		local_data.a = None
 		local_data.mp = None
 		local_data.error = None
-		local_data.start = self.start_cell
-		local_data.end = self.ending_cell
-		local_data.mp_aux=copy.deepcopy(self.mapa)
+		#local_data.start = self.start_cell
+		#local_data.end = self.ending_cell	
 		local_data.waypoint_start=waypoint_start
 		local_data.waypoint_end=waypoint_end
+		''' No es necesario con la nueva implementacion de mapa
+		local_data.mp_aux=copy.deepcopy(self.mapa)
 		if local_data.end != None : local_data.mp_aux[local_data.end[0]][local_data.end[1]] = constants.get_empty_cell_value()
 		if local_data.start != None : local_data.mp_aux[local_data.start[0]][local_data.start[1]] = constants.get_empty_cell_value()
 		if local_data.waypoint_start != None: local_data.mp_aux[local_data.waypoint_start[0]][local_data.waypoint_start[1]] = constants.get_start_cell_value()
 		if local_data.waypoint_end != None: local_data.mp_aux[local_data.waypoint_end[0]][local_data.waypoint_end[1]] = constants.get_ending_cell_value()
-		local_data.mp = Mapa(local_data.mp_aux)
+		'''
+		local_data.mp = Mapa(self.mapa, local_data.waypoint_start,local_data.waypoint_end)
 		local_data.a = A_estrella(local_data.mp)
 		local_data.doable = local_data.doable and local_data.a.get_solucionable()
 		with self.lock:
@@ -220,8 +226,6 @@ class Ui_MainWindow(object):
 
 		self.doable = True
 		self.error = ""
-		start = self.start_cell
-		end = self.ending_cell
 		waypoint_end=self.start_cell
 		self.route = []
 		processes = []
@@ -234,8 +238,7 @@ class Ui_MainWindow(object):
 				waypoint_end = self.waypoint_priority_queue[i]
 			else:
 				waypoint_end = end
-
-			process = Process(target = run_process, args= (self.mapa,waypoint_start,waypoint_end,start,end,self.multiprocess_result_queue,self.multiprocess_error_queue,))
+			process = Process(target = run_process, args= (self.mapa,waypoint_start,waypoint_end,self.multiprocess_result_queue,self.multiprocess_error_queue,))
 			processes.append(process)
 			process.start()
 			print ">>>>>>>>>>>>>>>>>>[DEBUG] waypoint_start ", waypoint_start, " waypoint_end ", waypoint_end
@@ -277,9 +280,10 @@ class Ui_MainWindow(object):
 				waypoint_end = self.waypoint_priority_queue[i]
 			else:
 				waypoint_end = end
+			#mp_aux=copy.deepcopy(mapa) Not needed any more
 			parent_conn_route, child_conn_route = Pipe()
 			route_pipes.append(parent_conn_route)
-			process = Process(target = run_process_pipes, args= (self.mapa,waypoint_start,waypoint_end,start,end,child_conn_route,))
+			process = Process(target = run_process_pipes, args= (self.mapa,waypoint_start,waypoint_end,child_conn_route,))
 			process.start()
 			print ">>>>>>>>>>>>>>>>>>[DEBUG] waypoint_start ", waypoint_start, " waypoint_end ", waypoint_end
 		for i in range(len(route_pipes)):
@@ -514,17 +518,19 @@ class Ui_MainWindow(object):
 
 '''For some reason i cant subclass Process
 '''
-def run_process(mapa,waypoint_start,waypoint_end,start,end,multiprocess_result_queue,multiprocess_error_queue):
+def run_process(mapa,waypoint_start,waypoint_end,multiprocess_result_queue,multiprocess_error_queue):
 		doable = True
 		a = None
 		mp = None
 		error = None
+		'''
 		mp_aux=copy.deepcopy(mapa)
 		if end != None : mp_aux[end[0]][end[1]] = constants.get_empty_cell_value()
 		if start != None : mp_aux[start[0]][start[1]] = constants.get_empty_cell_value()
 		if waypoint_start != None: mp_aux[waypoint_start[0]][waypoint_start[1]] = constants.get_start_cell_value()
 		if waypoint_end != None: mp_aux[waypoint_end[0]][waypoint_end[1]] = constants.get_ending_cell_value()
-		mp = Mapa(mp_aux)
+		'''
+		mp = Mapa(mapa,waypoint_start,waypoint_end)
 		a = A_estrella(mp)
 		doable =a.get_solucionable()
 		if doable:
@@ -532,18 +538,20 @@ def run_process(mapa,waypoint_start,waypoint_end,start,end,multiprocess_result_q
 			multiprocess_result_queue.put(route)
 		else:
 			multiprocess_error_queue.put(a.get_error())
-def run_process_pipes(mapa,waypoint_start,waypoint_end,start,end,child_conn_route):
+def run_process_pipes(mapa,waypoint_start,waypoint_end,child_conn_route):
 		doable = True
 		a = None
 		mp = None
 		error = None
-		mp_aux=copy.deepcopy(mapa)
+		#mp_aux=mapa
 		route=[]
+		'''
 		if end != None : mp_aux[end[0]][end[1]] = constants.get_empty_cell_value()
 		if start != None : mp_aux[start[0]][start[1]] = constants.get_empty_cell_value()
 		if waypoint_start != None: mp_aux[waypoint_start[0]][waypoint_start[1]] = constants.get_start_cell_value()
 		if waypoint_end != None: mp_aux[waypoint_end[0]][waypoint_end[1]] = constants.get_ending_cell_value()
-		mp = Mapa(mp_aux)
+		'''
+		mp = Mapa(mapa,waypoint_start,waypoint_end)
 		a = A_estrella(mp)
 		doable =a.get_solucionable()
 		if doable:
