@@ -127,7 +127,7 @@ class Nodo():
 		self.visitado = False
 		self.abierto = False
 		'''Para realizar el reenlace se tienen que conocer los hijos,implementado con un hashtable'''
-		self.diccionario_hijos= {}
+		self.diccionario_hijos = {}
 
 	def __ne__(self, other):
 		return not self.__eq__(other)
@@ -168,6 +168,7 @@ class Nodo():
 
 	def esta_abierto(self):
 		return self.abierto
+
 	def marcado_abierto(self):
 		self.abierto = True
 		pass
@@ -188,7 +189,12 @@ class A_estrella():
 		if( hasattr(objeto,"get_inicio") and hasattr(objeto,"get_meta") and hasattr(objeto,"dim") and hasattr(objeto,"adyacentes") ):
 
 			if ( self.objeto.get_inicio() and self.objeto.get_meta() ):
-				self.calcula_ruta_reenlace()
+
+				if ( constants.algorimthReLink() ):
+					self.calcula_ruta_reenlace()
+				else:
+					self.calcula_ruta()
+
 				self.ordenar_ruta()
 			else:
 				self.error="No se ha definido el inicio y/o la meta"
@@ -350,8 +356,15 @@ def relink(nuevo_padre,hijo,abiertos,reduccion):
 			abiertos[x] = abiertos[x]-reduccion
 		relink(hijo,hijo.diccionario_hijos[x],abiertos,reduccion)
 
-# array = [[("inicio",0),("obstaculo",0),("meta",0)],[("obstaculo",0),("obstaculo",0),("vacio",0)],[("vacio",0),("vacio",0),("vacio",0)]]
-# mapa = Mapa(array)
+# array = [
+# 	[("obstaculo",0),("obstaculo",0),("penalizacion",22), ("penalizacion",20)], 
+# 	[("obstaculo",0),("inicio",0),("obstaculo",0),("obstaculo",0)],
+# 	[("penalizacion",1),("penalizacion",3),("penalizacion",30), ("obstaculo",0)],
+# 	[("obstaculo",0),("obstaculo",0),("obstaculo",0),("meta",0)]
+# ]
+# mapa = Mapa(array, (1,1), (3,3))
 # a = A_estrella(mapa)
+# print("\n")
+# print(a.get_ruta())
 
 # print("\n Finish")

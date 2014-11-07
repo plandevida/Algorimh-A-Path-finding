@@ -9,6 +9,9 @@ from PyQt4.QtGui import *
 def debugMode():
 	return False
 
+def algorimthReLink():
+	return True
+
 ''' Constants for random in-route apparitions '''
 def get_random_background():
 	return QBrush ( Qt.green, Qt.CrossPattern )
