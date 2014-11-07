@@ -17,7 +17,7 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from Queue import PriorityQueue
 from Aestrella import *
-import random, constants, copy, threading, multiprocessing
+import random, constants, copy, threading
 from  multiprocessing import Process, Pipe
 from error_dialog import *
 
@@ -559,12 +559,5 @@ def run_process_pipes(mapa,waypoint_start,waypoint_end,child_conn_route):
 		child_conn_route.send(route)
 
 		
-if __name__ == "__main__":
-	import sys
-	app = QtGui.QApplication(sys.argv)
-	MainWindow = QtGui.QMainWindow()
-	ui = Ui_MainWindow(constants.get_table_x(),constants.get_table_y(),AllowMultiProcessing=constants.allow_multiprocessing())
-	ui.setupUi(MainWindow)
-	MainWindow.show()
-	sys.exit(app.exec_())
+
 
