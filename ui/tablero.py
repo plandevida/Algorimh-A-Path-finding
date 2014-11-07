@@ -12,9 +12,9 @@
 For test values lookup constants.py
 '''
 
-from PyQt4 import QtCore, QtGui
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+from PySide import QtCore, QtGui
+from PySide.QtGui import *
+from PySide.QtCore import *
 from Queue import PriorityQueue
 from Aestrella import *
 import random, constants, copy, threading
@@ -412,7 +412,7 @@ class Ui_MainWindow(object):
 		self.gridLayoutWidget.setObjectName(_fromUtf8("gridLayoutWidget"))
 		self.gridLayout = QtGui.QGridLayout(self.gridLayoutWidget)
 		self.gridLayout.setSizeConstraint(QtGui.QLayout.SetNoConstraint)
-		self.gridLayout.setMargin(20)
+		# self.gridLayout.setMargin(20)
 		self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
 
 		# Sets the elements in the grid layout

@@ -1,13 +1,13 @@
 
-from PyQt4 import *
-from PyQt4.Qt import *
-from PyQt4.QtGui import *
+from PySide import *
+from PySide.QtGui import *
+from PySide.QtCore import Qt
 
 # Define constant values 
 
 ''' A* constants'''
 def debugMode():
-	return False
+	return True
 
 ''' Constants for random in-route apparitions '''
 def get_random_background():
@@ -19,9 +19,9 @@ def get_in_cell_background():
 
 '''Main Ui constants'''
 def get_table_x():
-	return 100
+	return 30
 def get_table_y():
-	return 100
+	return 30
 def allow_multiprocessing():
 	return False
 '''

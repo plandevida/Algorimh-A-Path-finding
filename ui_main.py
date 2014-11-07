@@ -1,6 +1,6 @@
 import sys
-from PyQt4.QtGui import *
-from PyQt4 import QtGui
+from PySide.QtGui import *
+from PySide import QtGui
 from ui.tablero import Ui_MainWindow
 import constants
 
