@@ -59,9 +59,9 @@ class Ui_MainWindow(object):
 		self.clear_map()
 		for i in range(self.row_count):
 			for j in range(self.column_count):
-						item =self.centralwidget.findChild(QTableWidget, "table").item(i,j)
-						item.setBackground(constants.get_empty_background())
-						item.setText("")
+				item =self.centralwidget.findChild(QTableWidget, "table").item(i,j)
+				item.setBackground(constants.get_empty_background())
+				item.setText("")
 
 	# Delete painted routes
 	def clear_route(self):
