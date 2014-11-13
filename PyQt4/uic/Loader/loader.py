@@ -58,7 +58,7 @@ class DynamicUILoader(UIParser):
         else:
             return self.factory.createQObject(classname, widgetname, ())
 
-    def loadUi(self, filename, toplevelInst, resource_suffix):
+    def loadUi(self, filename, toplevelInst=None):
         self.toplevelInst = toplevelInst
 
         if hasattr(filename, 'read'):
@@ -68,4 +68,4 @@ class DynamicUILoader(UIParser):
             filename = str(filename)
             basedir = os.path.dirname(filename)
 
-        return self.parse(filename, resource_suffix, basedir)
+        return self.parse(filename, basedir)

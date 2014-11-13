@@ -1,6 +1,6 @@
 #############################################################################
 ##
-## Copyright (c) 2014 Riverbank Computing Limited <info@riverbankcomputing.com>
+## Copyright (c) 2012 Riverbank Computing Limited <info@riverbankcomputing.com>
 ## 
 ## This file is part of PyQt.
 ## 
@@ -95,8 +95,7 @@ class Driver(object):
                 pyfile = open(self._opts.output, 'wt')
 
         compileUi(self._ui_file, pyfile, self._opts.execute, self._opts.indent,
-                self._opts.pyqt3_wrapper, self._opts.from_imports,
-                self._opts.resource_suffix)
+                self._opts.pyqt3_wrapper, self._opts.from_imports)
 
     def on_IOError(self, e):
         """ Handle an IOError exception. """

@@ -134,9 +134,9 @@ class UICompiler(UIParser):
         # reset() before returning.
         self._resources = self.resources
 
-    def compileUi(self, input_stream, output_stream, from_imports, resource_suffix):
+    def compileUi(self, input_stream, output_stream, from_imports):
         createCodeIndenter(output_stream)
-        w = self.parse(input_stream, resource_suffix)
+        w = self.parse(input_stream)
 
         indenter = getIndenter()
         indenter.write("")

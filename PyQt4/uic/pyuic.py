@@ -1,6 +1,6 @@
 #############################################################################
 ##
-## Copyright (c) 2014 Riverbank Computing Limited <info@riverbankcomputing.com>
+## Copyright (c) 2012 Riverbank Computing Limited <info@riverbankcomputing.com>
 ## 
 ## This file is part of PyQt.
 ## 
@@ -55,7 +55,7 @@ parser.add_option("-d", "--debug", dest="debug", action="store_true",
         default=False, help="show debug output")
 parser.add_option("-i", "--indent", dest="indent", action="store", type="int",
         default=4, metavar="N",
-        help="set indent width to N spaces, tab if N is 0 [default: 4]")
+        help="set indent width to N spaces, tab if N is 0 (default: 4)")
 parser.add_option("-w", "--pyqt3-wrapper", dest="pyqt3_wrapper",
         action="store_true", default=False,
         help="generate a PyQt v3 style wrapper")
@@ -63,9 +63,6 @@ parser.add_option("-w", "--pyqt3-wrapper", dest="pyqt3_wrapper",
 g = optparse.OptionGroup(parser, title="Code generation options")
 g.add_option("--from-imports", dest="from_imports", action="store_true",
         default=False, help="generate imports relative to '.'")
-g.add_option("--resource-suffix", dest="resource_suffix", action="store",
-        type="string", default="_rc", metavar="SUFFIX",
-        help="append SUFFIX to the basename of resource files [default: _rc]")
 parser.add_option_group(g)
 
 opts, args = parser.parse_args()
