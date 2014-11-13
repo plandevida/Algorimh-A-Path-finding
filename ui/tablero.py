@@ -288,7 +288,7 @@ class Ui_MainWindow(object):
 			print ">>>>>>>>>>>>>>>>>>[DEBUG] waypoint_start ", waypoint_start, " waypoint_end ", waypoint_end
 		for i in range(len(route_pipes)):
 			route_aux.append(route_pipes[i].recv())
-			print "proces ",i, " recieved"
+			print "process ",i, " recieved"
 		if doable:
 			route = [(route_aux[y][x][0],route_aux[y][x][1])  for y in range(len(route_aux)) for x in range(len(route_aux[y]))]
 			print ">>>>>>>>>>>>>>>>>>[DEBUG] ruta final waypoints: ",route

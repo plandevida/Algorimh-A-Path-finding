@@ -22,9 +22,9 @@ def get_in_cell_background():
 
 '''Main Ui constants'''
 def get_table_x():
-	return 100
+	return 30
 def get_table_y():
-	return 100
+	return 30
 def allow_multiprocessing():
 	return False
 '''
