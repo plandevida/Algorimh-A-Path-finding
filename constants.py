@@ -13,6 +13,7 @@ def algorimthReLink():
 	return True
 
 ''' Constants for random in-route apparitions '''
+'''Not implemented'''
 def get_random_background():
 	return QBrush ( Qt.green, Qt.CrossPattern )
 def get_random_cell_value():
@@ -21,6 +22,7 @@ def get_in_cell_background():
 	return QBrush ( Qt.green, Qt.CrossPattern )
 
 '''Main Ui constants'''
+'''Size of the board'''
 def get_table_x():
 	return 30
 def get_table_y():
@@ -65,7 +67,7 @@ def get_empty_cell_value():
 def get_block_cell_value():
 	return ("obstaculo",0)
 def get_setback_cell_value():
-	return ("penalizacion",0.1)
+	return ("penalizacion",0.4)
 def get_start_cell_value():
 	return ("inicio",0)
 def get_ending_cell_value():
