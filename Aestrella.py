@@ -191,8 +191,10 @@ class A_estrella():
 			if ( self.objeto.get_inicio() and self.objeto.get_meta() ):
 
 				if ( constants.algorimthReLink() ):
+					print "Algoritmo con re-enlace"
 					self.calcula_ruta_reenlace()
 				else:
+					print "Algoritmo sin re-enlace"
 					self.calcula_ruta()
 
 				self.ordenar_ruta()
